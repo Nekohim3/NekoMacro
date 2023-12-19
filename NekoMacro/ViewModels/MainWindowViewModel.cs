@@ -54,6 +54,7 @@ namespace NekoMacro
                 //Thread.Sleep(500);
                 //GlobalDriver._driver.MoveMouseTo(100, 100, true);
                 Thread.Sleep(500);
+                GlobalDriver._driver.SendKey();
                 GlobalDriver._driver.SendMouseEvent(MouseState.LeftDown);
                 Thread.Sleep(250);
                 GlobalDriver._driver.SendMouseEvent(MouseState.LeftUp);
