@@ -4,49 +4,37 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Interceptor;
+using Newtonsoft.Json;
 using ReactiveUI;
 
 namespace NekoMacro.MacrosBase
 {
-    public class Command : ReactiveObject
+    public enum CommandStatus
     {
-        private bool _type;
-        public bool Type
+        Queue,
+        Execute,
+        Executed
+    }
+
+    [JsonObject]
+    public abstract class Command : ReactiveObject
+    {
+        private CommandStatus _status;
+        public CommandStatus Status
         {
-            get => _type;
-            set => this.RaiseAndSetIfChanged(ref _type, value);
+            get => _status;
+            set => this.RaiseAndSetIfChanged(ref _status, value);
         }
 
-        private ushort _code;
-        public ushort Code
-        {
-            get => _code;
-            set => this.RaiseAndSetIfChanged(ref _code, value);
-        }
+        public abstract string TypeE  { get; }
+        public abstract string KeyE   { get; }
+        public abstract string StateE { get; }
+        public virtual  string XE     { get; }
+        public virtual  string YE     { get; }
+        public virtual  string AbsE   { get; }
 
-        private int _x;
-        public int X
-        {
-            get => _x;
-            set => this.RaiseAndSetIfChanged(ref _x, value);
-        }
+        public abstract void Execute();
 
-        private int _y;
-        public int Y
-        {
-            get => _y;
-            set => this.RaiseAndSetIfChanged(ref _y, value);
-        }
 
-        private bool _abs;
-        public bool Abs
-        {
-            get => _abs;
-            set => this.RaiseAndSetIfChanged(ref _abs, value);
-        }
-
-        public bool IsKeyCmd => Type;
-        public Keys Key      => IsKeyCmd ? (Keys)Code : Keys.None;
-        public MouseState => 
     }
 }

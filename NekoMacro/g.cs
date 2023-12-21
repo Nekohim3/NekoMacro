@@ -2,61 +2,45 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
-using Interceptor;
+using NekoMacro.UI;
 
 namespace NekoMacro
 {
-    public static class GlobalDriver
+    public static class g
     {
-        public static Input _driver;
+        public static Settings   Settings   { get; set; }
+        public static string     CompName   => Environment.MachineName;
+        public static TabManager TabManager { get; set; }
 
-        public static void Load(KeyboardFilterMode                  keyFilterMode     = KeyboardFilterMode.All,
-                                MouseFilterMode                     mouseFilterMode   = MouseFilterMode.All,
-                                int                                 keyPressDelay     = 50,
-                                int                                 clickDelay        = 100,
-                                int                                 scrollDelay       = 50,
-                                EventHandler<KeyPressedEventArgs>   keyPressHandler   = null,
-                                EventHandler<MousePressedEventArgs> mousePressHandler = null)
+        public static LoadingControlViewModel LoadingControlVM { get; set; }
+        public static NMsgViewModel           NMsgVM           { get; set; }
+
+        public static NMsgReply MsgShow(string msg, string title, NMsgButtons buttons) => NMsgVM.Show(msg, title, buttons);
+        public static NMsgReply MsgShow(string msg, string title) => NMsgVM.Show(msg, title);
+
+        public static void Init()
         {
-            if (_driver != null && _driver.IsLoaded)
-                return;
-            _driver = new Input
-                      {
-                          KeyboardFilterMode = keyFilterMode,
-                          MouseFilterMode    = mouseFilterMode,
-                          KeyPressDelay      = keyPressDelay,
-                          ClickDelay         = clickDelay,
-                          ScrollDelay        = scrollDelay
-                      };
-
-            if (keyPressHandler != null)
-                KeyPressSubscribe(keyPressHandler);
-            if (mousePressHandler != null)
-                MousePressSubscribe(mousePressHandler);
-
-            _driver.Load();
+            Settings = Settings.Load() ?? new Settings();
+            Logger.Info("Settings loaded");
+            TabManager = new TabManager();
+            TabManager.InitTabs();
         }
 
-        public static void Unload()
+        public static void StartLongOperation(Action act, Action fin = null)
         {
-            if (_driver == null || !_driver.IsLoaded)
-                return;
-            _driver.Unload();
-        }
-
-        public static void KeyPressSubscribe(EventHandler<KeyPressedEventArgs> keyPressHandler)
-        {
-            if (_driver == null)
-                return;
-            _driver.OnKeyPressed += keyPressHandler;
-        }
-
-        public static void MousePressSubscribe(EventHandler<MousePressedEventArgs> mousePressHandler)
-        {
-            if (_driver == null)
-                return;
-            _driver.OnMousePressed += mousePressHandler;
+            new Thread(() =>
+                       {
+                           LoadingControlVM.IsVisible   = true;
+                           LoadingControlVM.LoadingText = "Prepare operation";
+                           act.Invoke();
+                           fin?.Invoke();
+                           LoadingControlVM.LoadingText += " Done!";
+                           Thread.Sleep(1000);
+                           LoadingControlVM.IsVisible   = false;
+                           LoadingControlVM.LoadingText = "";
+                       }).Start();
         }
     }
 }

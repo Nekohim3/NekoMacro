@@ -1,0 +1,38 @@
+﻿<Page x:Class="NekoMacro.Views.SettingsView"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:local="clr-namespace:NekoMacro.Views"
+      xmlns:viewModels="clr-namespace:NekoMacro.ViewModels"
+      mc:Ignorable="d" d:DataContext="{d:DesignInstance viewModels:SettingsViewModel}"
+      d:DesignHeight="450" d:DesignWidth="800"
+      Title="SettingsView">
+
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <GroupBox Grid.Row="1" Header="Theme settings">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <CheckBox Grid.Column="0" Margin="3,0,3,0" Content="DarkRed Theme" IsChecked="{Binding DarkRedThemeChecked}"/>
+                <CheckBox Grid.Column="1" Margin="3,0,3,0" Content="DarkBlue Theme" IsChecked="{Binding DarkBlueThemeChecked}"/>
+                <CheckBox Grid.Column="2" Margin="3,0,3,0" Content="LightRed Theme" IsChecked="{Binding LightRedThemeChecked}"/>
+                <CheckBox Grid.Column="3" Margin="3,0,3,0" Content="LightBlue Theme" IsChecked="{Binding LightBlueThemeChecked}"/>
+            </Grid>
+        </GroupBox>
+    </Grid>
+</Page>

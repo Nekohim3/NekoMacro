@@ -4,31 +4,30 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:NekoMacro"
-        d:DataContext="{d:DesignInstance local:MainWindowViewModel}"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800" Closed="MainWindow_OnClosed">
-    <Grid>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="Auto"/>
-            <ColumnDefinition Width="Auto"/>
-            <ColumnDefinition Width="Auto"/>
-            <ColumnDefinition Width="Auto"/>
-            <ColumnDefinition Width="Auto"/>
-            <ColumnDefinition Width="*"/>
-        </Grid.ColumnDefinitions>
+        
+        WindowStartupLocation="CenterScreen"
+        d:DataContext="{d:DesignInstance local:MainWindowViewModel}"
+        Title="{Binding Source={x:Static local:g.TabManager}, Path=SelectedTab.TabName}" 
+        Background="{DynamicResource Gray2}" 
+        Closed="MainWindow_OnClosed"
+        Height="720" MinHeight="720" 
+        Width="640" MinWidth="640" 
+        AllowsTransparency="True" ResizeMode="CanResize" Style="{StaticResource VS2012WindowStyle}"
+        >
+    <Grid Margin="0,0,0,0" Grid.IsSharedSizeScope="True">
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
-        <Button Grid.Column="0" Grid.Row="0" Content="Load" Command="{Binding LoadDriverCmd}"/>
-        <Button Grid.Column="0" Grid.Row="1" Content="Test" Command="{Binding TestCmd}"/>
-        <Button Grid.Column="0" Grid.Row="2" Content="Unload" Command="{Binding UnloadDriverCmd}"/>
-
-        <TextBox Grid.Column="1" Grid.Row="1" Width="200"/>
-        <TextBox Grid.Column="2" Grid.Row="0" Width="500" Height="1000" Text="{Binding Text}"></TextBox>
+        <Border Grid.Row="1" BorderThickness="1" BorderBrush="{DynamicResource WeakRed}" Height="1"/>
+        <Frame Grid.Row="2" NavigationUIVisibility="Hidden" Content="{Binding Source={x:Static local:g.TabManager}, Path=SelectedTab.Page}">
+            <Frame.Style>
+                <Style TargetType="Frame">
+                    <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+                </Style>
+            </Frame.Style>
+        </Frame>
     </Grid>
 </Window>
