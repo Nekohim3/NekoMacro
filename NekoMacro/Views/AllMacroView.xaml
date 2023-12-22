@@ -5,11 +5,18 @@
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       xmlns:local="clr-namespace:NekoMacro.Views"
       xmlns:viewModels="clr-namespace:NekoMacro.ViewModels"
+      xmlns:ui="clr-namespace:NekoMacro.UI"
       mc:Ignorable="d" 
       d:DataContext="{d:DesignInstance viewModels:AllMacroViewModel}"
-      d:DesignHeight="450" d:DesignWidth="800"
+      d:DesignHeight="720" d:DesignWidth="550"
       Title="AllMacroView">
     <Page.Resources>
+        <ui:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
+        <ui:BoolToReverseConverter x:Key="BoolToReverseConverter"/>
+        <ui:EnumToVisibilityConverter x:Key="EnumToVisibilityConverter"/>
+        <ui:EnumToVisibilityReverseConverter x:Key="EnumToVisibilityReverseConverter"/>
+        <ui:ObjIsNullToVisibilityConverter x:Key="ObjIsNullToVisibilityConverter"/>
+        <ui:ObjIsNullToVisibilityReverseConverter x:Key="ObjIsNullToVisibilityReverseConverter"/>
         <Style x:Key="CommandDataGridRowStyle" TargetType="{x:Type DataGridRow}" BasedOn="{StaticResource {x:Type DataGridRow}}">
             <Style.Triggers>
                 <DataTrigger Binding="{Binding TypeE}" Value="Key">
@@ -24,6 +31,7 @@
         </Style>
         <Style x:Key="CommandDataGridStyle" TargetType="DataGrid" BasedOn="{StaticResource {x:Type DataGrid}}">
             <Setter Property="RowStyle" Value="{StaticResource CommandDataGridRowStyle}"/>
+            <Setter Property="SelectionMode" Value="Single"/>
             <Setter Property="IsReadOnly" Value="True"/>
         </Style>
     </Page.Resources>
@@ -31,7 +39,7 @@
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="300"/>
             <ColumnDefinition Width="250"/>
-            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="0"/>
         </Grid.ColumnDefinitions>
         <GroupBox Grid.Column="0" Header="All macros list">
             <Grid>
@@ -62,6 +70,7 @@
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="*"/>
+                    <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
                 <Grid Grid.Row="0">
                     <Grid.ColumnDefinitions>
@@ -83,11 +92,59 @@
                         <!--<DataGridTextColumn Header="AbsXY" Binding="{Binding AbsE}" Width="Auto"/>-->
                     </DataGrid.Columns>
                 </DataGrid>
+                <GroupBox Header="Edit command" Grid.Row="2" Visibility="{Binding EditedCommand, Converter={StaticResource ObjIsNullToVisibilityReverseConverter}}">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="100"/>
+                        </Grid.RowDefinitions>
+                        <ComboBox ItemsSource="{Binding TypeList}" SelectedItem="{Binding TypeList.SelectedItem}"/>
+                        <!-- type -->
+                        <Grid Grid.Row="1">
+                            <!-- key -->
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition/>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+                            <TextBlock Grid.Row="0" Grid.Column="0" Text="Key" VerticalAlignment="Center" Margin="3"/>
+                            <ComboBox Grid.Row="0" Grid.Column="1"/>
+                            <TextBlock Grid.Row="1" Grid.Column="0" Text="Dir" VerticalAlignment="Center" Margin="3"/>
+                            <ComboBox Grid.Row="1" Grid.Column="1"/>
+                        </Grid>
+                        <Grid Grid.Row="1">
+                            <!-- mouse -->
+
+                        </Grid>
+                        <Grid Grid.Row="1">
+                            <!-- delay -->
+
+                        </Grid>
+                    </Grid>
+                </GroupBox>
             </Grid>
         </GroupBox>
         <GroupBox Grid.Column="2" Header="Edit command">
             <Grid>
-                
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <Button Grid.Row="0" Content="Добавить"/>
+                <Button Grid.Row="1" Content="Записать"/>
+                <Button Grid.Row="2" Content="Удалить все тайминги"/>
+                <Button Grid.Row="3" Content="Установить все тайминги"/>
+                <Button Grid.Row="4" Content="Добавить"/>
+                <Button Grid.Row="5" Content="Добавить"/>
             </Grid>
         </GroupBox>
     </Grid>

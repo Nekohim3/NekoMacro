@@ -72,8 +72,10 @@ namespace NekoMacro.MacrosBase
             get => _abs;
             set => this.RaiseAndSetIfChanged(ref _abs, value);
         }
-        
-        public override string TypeE  => "Mouse";
+
+        public override CommandType Type => CommandType.Mouse;
+
+        public override string TypeE  => Type.ToString();
         public override string KeyE   => $"{State.GetKeyFromState()}{(X != int.MinValue && Y != int.MaxValue ? $" ({X}:{Y})" : "")}";
         public override string StateE => State.GetDirectionFromState();
         public override string XE     => X == int.MinValue ? "" : X.ToString();

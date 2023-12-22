@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Interceptor;
+using NekoMacro.Utils;
 using Newtonsoft.Json;
 using ReactiveUI;
 
@@ -16,6 +17,14 @@ namespace NekoMacro.MacrosBase
         Executed
     }
 
+    public enum CommandType
+    {
+        None,
+        Key,
+        Mouse,
+        Delay
+    }
+
     [JsonObject]
     public abstract class Command : ReactiveObject
     {
@@ -26,6 +35,8 @@ namespace NekoMacro.MacrosBase
             set => this.RaiseAndSetIfChanged(ref _status, value);
         }
 
+        public abstract CommandType Type { get; }
+
         public abstract string TypeE  { get; }
         public abstract string KeyE   { get; }
         public abstract string StateE { get; }
@@ -35,6 +46,11 @@ namespace NekoMacro.MacrosBase
 
         public abstract void Execute();
 
-
+        private ObservableCollectionWithSelectedItem<CommandType> _typeList;
+        public ObservableCollectionWithSelectedItem<CommandType> TypeList
+        {
+            get => _typeList;
+            set => this.RaiseAndSetIfChanged(ref _typeList, value);
+        }
     }
 }

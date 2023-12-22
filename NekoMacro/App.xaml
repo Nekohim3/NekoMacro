@@ -300,6 +300,7 @@
             <Style TargetType="DataGrid">
                 <Setter Property="AutoGenerateColumns" Value="False" />
                 <Setter Property="CanUserAddRows" Value="False" />
+                <Setter Property="SelectionMode" Value="Single"/>
                 <Setter Property="CanUserSortColumns" Value="False"/>
                 <Setter Property="CanUserReorderColumns" Value="False"/>
                 <Setter Property="SelectionMode" Value="Extended" />

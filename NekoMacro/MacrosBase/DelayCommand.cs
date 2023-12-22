@@ -18,9 +18,10 @@ namespace NekoMacro.MacrosBase
             set => this.RaiseAndSetIfChanged(ref _delay, value);
         }
 
-        public override string TypeE  => "Delay";
-        public override string KeyE   => Delay.ToString();
-        public override string StateE => "";
+        public override CommandType Type   => CommandType.Delay;
+        public override string      TypeE  => Type.ToString();
+        public override string      KeyE   => Delay.ToString();
+        public override string      StateE => "";
 
         public DelayCommand()
         {

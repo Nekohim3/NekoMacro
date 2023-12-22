@@ -26,7 +26,9 @@ namespace NekoMacro.MacrosBase
             set => this.RaiseAndSetIfChanged(ref _state, value);
         }
 
-        public override string TypeE  => "Key";
+        public override CommandType Type => CommandType.Key;
+
+        public override string TypeE  => Type.ToString();
         public override string KeyE   => Key.ToString();
         public override string StateE => State.ToString().Substring(0, 1);
 
