@@ -91,6 +91,7 @@ namespace NekoMacro.Utils
         {
             _filterTimer = new Timer(TimerCallback, null, Timeout.InfiniteTimeSpan, Timeout.InfiniteTimeSpan);
             CollectionChanged += OnCollectionChanged;
+            SetSelectedToFirst();
         }
 
         public ObservableCollectionWithSelectedItem(IEnumerable<T> list) : base(list)
@@ -98,6 +99,7 @@ namespace NekoMacro.Utils
             _filterTimer = new Timer(TimerCallback, null, Timeout.InfiniteTimeSpan, Timeout.InfiniteTimeSpan);
             _sourceCollection = Items.ToList();
             CollectionChanged += OnCollectionChanged;
+            SetSelectedToFirst();
         }
 
         #endregion

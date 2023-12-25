@@ -6,6 +6,7 @@
       xmlns:local="clr-namespace:NekoMacro.Views"
       xmlns:viewModels="clr-namespace:NekoMacro.ViewModels"
       xmlns:ui="clr-namespace:NekoMacro.UI"
+      xmlns:utils="clr-namespace:NekoMacro.Utils"
       mc:Ignorable="d" 
       d:DataContext="{d:DesignInstance viewModels:AllMacroViewModel}"
       d:DesignHeight="720" d:DesignWidth="550"
@@ -37,8 +38,8 @@
     </Page.Resources>
     <Grid>
         <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
             <ColumnDefinition Width="300"/>
-            <ColumnDefinition Width="250"/>
             <ColumnDefinition Width="0"/>
         </Grid.ColumnDefinitions>
         <GroupBox Grid.Column="0" Header="All macros list">
@@ -79,29 +80,47 @@
                         <ColumnDefinition Width="*"/>
                         <ColumnDefinition Width="Auto" MinWidth="50"/>
                     </Grid.ColumnDefinitions>
-                    <Button Grid.Column="0" Content="Edit"/>
+                    <Button Grid.Column="0" Content="Add"/>
                     <CheckBox Grid.Column="3" Margin="3,0,3,0" Content="Hide delays" IsChecked="{Binding MacrosList.SelectedItem.HideDelay}"/>
                 </Grid>
                 <DataGrid Grid.Row="1" Margin="0" ItemsSource="{Binding MacrosList.SelectedItem.Commands}" SelectedItem="{Binding MacrosList.SelectedItem.Commands.SelectedItem}"  Style="{StaticResource CommandDataGridStyle}">
                     <DataGrid.Columns>
                         <DataGridTextColumn Header="Type" Binding="{Binding TypeE}" Width="Auto"/>
-                        <DataGridTextColumn Header="S" Binding="{Binding StateE}" Width="Auto"/>
+                        <DataGridTextColumn Header="S" Binding="{Binding DirE}" Width="Auto"/>
                         <DataGridTextColumn Header="K/D" Binding="{Binding KeyE}" Width="*"/>
                         <!--<DataGridTextColumn Header="X" Binding="{Binding XE}" Width="Auto"/>
                     <DataGridTextColumn Header="Y" Binding="{Binding YE}" Width="Auto"/>-->
                         <!--<DataGridTextColumn Header="AbsXY" Binding="{Binding AbsE}" Width="Auto"/>-->
                     </DataGrid.Columns>
                 </DataGrid>
-                <GroupBox Header="Edit command" Grid.Row="2" Visibility="{Binding EditedCommand, Converter={StaticResource ObjIsNullToVisibilityReverseConverter}}">
+                <GroupBox Header="Add command" Grid.Row="2">
                     <Grid>
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="100"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
                         </Grid.RowDefinitions>
-                        <ComboBox ItemsSource="{Binding TypeList}" SelectedItem="{Binding TypeList.SelectedItem}"/>
+                        <ComboBox ItemsSource="{Binding TypeList}" SelectedItem="{Binding TypeList.SelectedItem}" Margin="1"/>
                         <!-- type -->
-                        <Grid Grid.Row="1">
+                        <Grid Grid.Row="1" Visibility="{Binding KeyVisibility}">
                             <!-- key -->
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="52"/>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+                            <TextBlock Grid.Row="0" Grid.Column="0" Text="Key" VerticalAlignment="Center" Margin="3"/>
+                            <ComboBox Grid.Row="0" Grid.Column="1" ItemsSource="{Binding KeyList}" SelectedItem="{Binding KeyList.SelectedItem}"/>
+                            <TextBlock Grid.Row="1" Grid.Column="0" Text="Dir" VerticalAlignment="Center" Margin="3"/>
+                            <ComboBox Grid.Row="1" Grid.Column="1" ItemsSource="{Binding KeyStateList}" SelectedItem="{Binding KeyStateList.SelectedItem}"/>
+                        </Grid>
+                        <Grid Grid.Row="1" Visibility="{Binding MouseVisibility}">
+                            <!-- mouse -->
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="Auto"/>
                                 <ColumnDefinition/>
@@ -112,18 +131,20 @@
                                 <RowDefinition Height="Auto"/>
                             </Grid.RowDefinitions>
                             <TextBlock Grid.Row="0" Grid.Column="0" Text="Key" VerticalAlignment="Center" Margin="3"/>
-                            <ComboBox Grid.Row="0" Grid.Column="1"/>
+                            <ComboBox Grid.Row="0" Grid.Column="1" ItemsSource="{Binding MouseButtonList}" SelectedItem="{Binding MouseButtonList.SelectedItem}"/>
                             <TextBlock Grid.Row="1" Grid.Column="0" Text="Dir" VerticalAlignment="Center" Margin="3"/>
-                            <ComboBox Grid.Row="1" Grid.Column="1"/>
+                            <ComboBox Grid.Row="1" Grid.Column="1" ItemsSource="{Binding MouseDirList}" SelectedItem="{Binding MouseDirList.SelectedItem}"/>
                         </Grid>
-                        <Grid Grid.Row="1">
-                            <!-- mouse -->
-
-                        </Grid>
-                        <Grid Grid.Row="1">
+                        <Grid Grid.Row="1" Visibility="{Binding DelayVisibility}">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+                            <utils:IntegerTextBox Text="{Binding Delay}" HorizontalAlignment="Center" Width="50" HorizontalContentAlignment="Center"/>
                             <!-- delay -->
 
                         </Grid>
+                        <Button Grid.Row="1" HorizontalAlignment="Right" Grid.RowSpan="2" Height="Auto" Margin="1" Width="50" Content="Add" Command="{Binding AddCommandCmd}"/>
                     </Grid>
                 </GroupBox>
             </Grid>

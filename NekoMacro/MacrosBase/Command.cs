@@ -19,7 +19,6 @@ namespace NekoMacro.MacrosBase
 
     public enum CommandType
     {
-        None,
         Key,
         Mouse,
         Delay
@@ -39,18 +38,18 @@ namespace NekoMacro.MacrosBase
 
         public abstract string TypeE  { get; }
         public abstract string KeyE   { get; }
-        public abstract string StateE { get; }
+        public abstract string DirE { get; }
         public virtual  string XE     { get; }
         public virtual  string YE     { get; }
         public virtual  string AbsE   { get; }
 
         public abstract void Execute();
 
-        private ObservableCollectionWithSelectedItem<CommandType> _typeList;
-        public ObservableCollectionWithSelectedItem<CommandType> TypeList
-        {
-            get => _typeList;
-            set => this.RaiseAndSetIfChanged(ref _typeList, value);
-        }
+        //private ObservableCollectionWithSelectedItem<CommandType> _typeList;
+        //public ObservableCollectionWithSelectedItem<CommandType> TypeList
+        //{
+        //    get => _typeList;
+        //    set => this.RaiseAndSetIfChanged(ref _typeList, value);
+        //}
     }
 }

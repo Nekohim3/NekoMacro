@@ -21,7 +21,7 @@ namespace NekoMacro.MacrosBase
         public override CommandType Type   => CommandType.Delay;
         public override string      TypeE  => Type.ToString();
         public override string      KeyE   => Delay.ToString();
-        public override string      StateE => "";
+        public override string      DirE => "";
 
         public DelayCommand()
         {

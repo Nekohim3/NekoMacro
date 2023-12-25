@@ -200,10 +200,10 @@
     <Compile Include="MacrosBase\KeyCommand.cs" />
     <Compile Include="MacrosBase\Macros.cs" />
     <Compile Include="MacrosBase\MouseCommand.cs" />
-    <Compile Include="Utils\DirectionWrapper.cs" />
     <Compile Include="Utils\EnumWrapper.cs" />
     <Compile Include="Utils\KeysWrapper.cs" />
     <Compile Include="Utils\MouseWrapper.cs" />
+    <Compile Include="Utils\NumberTextBox.cs" />
     <Compile Include="Utils\ObservableCollectionWithSelectedItem.cs" />
     <Compile Include="Utils\TypeWrapper.cs" />
     <Compile Include="ViewModels\AllMacroViewModel.cs" />

@@ -30,7 +30,7 @@ namespace NekoMacro.MacrosBase
 
         public override string TypeE  => Type.ToString();
         public override string KeyE   => Key.ToString();
-        public override string StateE => State.ToString().Substring(0, 1);
+        public override string DirE => State.ToString();
 
         public KeyCommand()
         {
@@ -45,8 +45,7 @@ namespace NekoMacro.MacrosBase
 
         public override void Execute()
         {
-            if (Key == Keys.None || State == KeyState.None)
-                return;
+
         }
 
         public override string ToString()

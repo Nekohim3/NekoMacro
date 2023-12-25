@@ -9,30 +9,57 @@ using static System.Net.Mime.MediaTypeNames;
 
 namespace NekoMacro.Utils
 {
-    public class MouseWrapper : ReactiveObject
-    {
-        private MouseState _state;
-        public MouseState State
-        {
-            get => _state;
-            set => this.RaiseAndSetIfChanged(ref _state, value);
-        }
+    //public class MouseKeyWrapper : ReactiveObject
+    //{
+    //    private MouseButton _button;
+    //    public MouseButton Button
+    //    {
+    //        get => _button;
+    //        set => this.RaiseAndSetIfChanged(ref _button, value);
+    //    }
 
-        public MouseWrapper()
-        {
-            
-        }
+    //    public MouseKeyWrapper()
+    //    {
 
-        public MouseWrapper(MouseState state)
-        {
-            _state = state;
-        }
+    //    }
 
-        public override string ToString()
-        {
-            return State.ToString();
-        }
+    //    public MouseKeyWrapper(MouseButton state)
+    //    {
+    //        _button = state;
+    //    }
 
-        public static List<MouseWrapper> GetList() => Enum.GetValues(typeof(MouseState)).Cast<MouseState>().Select(_ => new MouseWrapper(_)).ToList();
-    }
+    //    public override string ToString()
+    //    {
+    //        return Button.ToString();
+    //    }
+
+    //    public static List<MouseKeyWrapper> GetList() => Enum.GetValues(typeof(MouseButton)).Cast<MouseButton>().Select(_ => new MouseKeyWrapper(_)).ToList();
+    //}
+
+    //public class MouseDirWrapper : ReactiveObject
+    //{
+    //    private MouseDir _dir;
+    //    public MouseDir Dir
+    //    {
+    //        get => _dir;
+    //        set => this.RaiseAndSetIfChanged(ref _dir, value);
+    //    }
+
+    //    public MouseDirWrapper()
+    //    {
+
+    //    }
+
+    //    public MouseDirWrapper(MouseDir state)
+    //    {
+    //        _dir = state;
+    //    }
+
+    //    public override string ToString()
+    //    {
+    //        return Dir.ToString();
+    //    }
+
+    //    public static List<MouseDirWrapper> GetList() => Enum.GetValues(typeof(MouseDir)).Cast<MouseDir>().Select(_ => new MouseDirWrapper(_)).ToList();
+    //}
 }
