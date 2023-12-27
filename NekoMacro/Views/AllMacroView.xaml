@@ -13,6 +13,7 @@
       Title="AllMacroView">
     <Page.Resources>
         <ui:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
+        <ui:BoolToVisibilityReverseConverter x:Key="BoolToVisibilityReverseConverter"/>
         <ui:BoolToReverseConverter x:Key="BoolToReverseConverter"/>
         <ui:EnumToVisibilityConverter x:Key="EnumToVisibilityConverter"/>
         <ui:EnumToVisibilityReverseConverter x:Key="EnumToVisibilityReverseConverter"/>
@@ -83,12 +84,12 @@
                         <ColumnDefinition Width="Auto" MinWidth="50"/>
                     </Grid.ColumnDefinitions>
                     <Button Grid.Column="0" Content="Add"  IsEnabled="{Binding IsRecord, Converter={StaticResource BoolToReverseConverter}}"/>
-                    <Button Grid.Column="3" Content="Stop" Command="{Binding StopRecordCmd}"/>
-                    <Button Grid.Column="4" Content="Record" Command="{Binding RecordCmd}"/>
+                    <Button Grid.Column="4" Content="Stop" Command="{Binding StopRecordCmd}" Visibility="{Binding IsRecord, Converter={StaticResource BoolToVisibilityConverter}}"/>
+                    <Button Grid.Column="4" Content="Record" Command="{Binding RecordCmd}" Visibility="{Binding IsRecord, Converter={StaticResource BoolToVisibilityReverseConverter}}"/>
                     <CheckBox Grid.Column="5" Content="Record delay" Margin="3,0,3,0" IsChecked="{Binding RecordDelay}"/>
                     <!--<CheckBox Grid.Column="3" Margin="3,0,3,0" Content="Hide delays" IsChecked="{Binding MacrosList.SelectedItem.HideDelay}"/>-->
                 </Grid>
-                <DataGrid Grid.Row="1" Margin="0" ItemsSource="{Binding MacrosList.SelectedItem.Commands}" SelectedItem="{Binding MacrosList.SelectedItem.Commands.SelectedItem}"  Style="{StaticResource CommandDataGridStyle}"  IsEnabled="{Binding IsRecord, Converter={StaticResource BoolToReverseConverter}}">>
+                <DataGrid Grid.Row="1" Margin="0" ItemsSource="{Binding MacrosList.SelectedItem.Commands}" SelectedItem="{Binding MacrosList.SelectedItem.Commands.SelectedItem}"  Style="{StaticResource CommandDataGridStyle}"  IsEnabled="{Binding IsRecord, Converter={StaticResource BoolToReverseConverter}}">
                     <DataGrid.Columns>
                         <DataGridTextColumn Header="Type" Binding="{Binding TypeE}" Width="Auto"/>
                         <DataGridTextColumn Header="S" Binding="{Binding DirE}" Width="Auto"/>

@@ -57,12 +57,7 @@ namespace NekoMacro.ViewModels
         public int Delay
         {
             get => _delay;
-            set
-            {
-                if (_isRecord)
-                    return;
-                this.RaiseAndSetIfChanged(ref _delay, value);
-            }
+            set => this.RaiseAndSetIfChanged(ref _delay, value);
         }
 
         //private ObservableCollectionWithSelectedItem<KeysWrapper> _keyList = new ObservableCollectionWithSelectedItem<KeysWrapper>(KeysWrapper.GetList());
@@ -120,7 +115,15 @@ namespace NekoMacro.ViewModels
         public bool RecordDelay
         {
             get => _recordDelay;
-            set => this.RaiseAndSetIfChanged(ref _recordDelay, value);
+            set
+            {
+                if (_isRecord)
+                {
+                    this.RaisePropertyChanged();
+                    return;
+                }
+                this.RaiseAndSetIfChanged(ref _recordDelay, value);
+            }
         }
 
         private bool _isRecord;
@@ -269,7 +272,7 @@ namespace NekoMacro.ViewModels
         private void OnRecord()
         {
             IsRecord                         =  true;
-            GlobalDriver._driver.OnKeyPressed += DriverOnOnKeyPressed;
+            //GlobalDriver._driver.OnKeyPressed += DriverOnOnKeyPressed;
         }
 
         private void DriverOnOnKeyPressed(object sender, KeyPressedEventArgs e)
@@ -305,7 +308,7 @@ namespace NekoMacro.ViewModels
 
         private void OnStopRecord()
         {
-            GlobalDriver._driver.OnKeyPressed -= DriverOnOnKeyPressed;
+            //GlobalDriver._driver.OnKeyPressed -= DriverOnOnKeyPressed;
             IsRecord                         =  false;
         }
 
