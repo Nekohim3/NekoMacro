@@ -44,7 +44,7 @@ namespace NekoMacro.MacrosBase
 
         public Macros()
         {
-            Commands = new ObservableCollectionWithSelectedItem<Command>() { UseFilter = true };
+            Commands = new ObservableCollectionWithSelectedItem<Command>() { };
         }
 
 

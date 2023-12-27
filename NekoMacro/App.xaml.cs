@@ -22,12 +22,14 @@ namespace NekoMacro
             g.Init();
             base.OnStartup(e);
 
-#if DEBUG
+//#if DEBUG
 
-#else
+//#else
             AppDomain.CurrentDomain.UnhandledException       += CurrentDomain_UnhandledException;
             Application.Current.DispatcherUnhandledException += CurrentOnDispatcherUnhandledException;
-#endif
+//#endif
+
+            //GlobalDriver.Load();
 
             var f  = new MainWindow();
             var vm = new MainWindowViewModel();
@@ -53,11 +55,13 @@ namespace NekoMacro
         private static void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
         {
             Logger.ErrorQ(e.ExceptionObject as Exception);
+            //GlobalDriver.Unload();
         }
 
         private void CurrentOnDispatcherUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)
         {
             Logger.ErrorQ(e.Exception);
+            //GlobalDriver.Unload();
         }
     }
 }

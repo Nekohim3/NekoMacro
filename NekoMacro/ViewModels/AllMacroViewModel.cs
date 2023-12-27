@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.Linq;
 using System.Reactive;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Threading;
 using Interceptor;
 using NekoMacro.MacrosBase;
 using NekoMacro.Utils;
@@ -55,7 +57,12 @@ namespace NekoMacro.ViewModels
         public int Delay
         {
             get => _delay;
-            set => this.RaiseAndSetIfChanged(ref _delay, value);
+            set
+            {
+                if (_isRecord)
+                    return;
+                this.RaiseAndSetIfChanged(ref _delay, value);
+            }
         }
 
         //private ObservableCollectionWithSelectedItem<KeysWrapper> _keyList = new ObservableCollectionWithSelectedItem<KeysWrapper>(KeysWrapper.GetList());
@@ -108,12 +115,30 @@ namespace NekoMacro.ViewModels
             set => this.RaiseAndSetIfChanged(ref _delayVisibility, value);
         }
 
+        private DateTime _dt = DateTime.MinValue;
+        private bool        _recordDelay;
+        public bool RecordDelay
+        {
+            get => _recordDelay;
+            set => this.RaiseAndSetIfChanged(ref _recordDelay, value);
+        }
+
+        private bool _isRecord;
+        public bool IsRecord
+        {
+            get => _isRecord;
+            set => this.RaiseAndSetIfChanged(ref _isRecord, value);
+        }
+
         public ReactiveCommand<Unit, Unit> AddCommandCmd { get; }
-
-
+        public ReactiveCommand<Unit, Unit> RecordCmd   { get; }
+        public ReactiveCommand<Unit, Unit> StopRecordCmd          { get; }
+        
         public AllMacroViewModel()
         {
             AddCommandCmd = ReactiveCommand.Create(OnAddCommand);
+            RecordCmd   = ReactiveCommand.Create(OnRecord);
+            StopRecordCmd = ReactiveCommand.Create(OnStopRecord);
             MacrosList    = new ObservableCollectionWithSelectedItem<Macros>();
             var macros = new Macros("Test macros");
             macros.AddCommand(new KeyCommand(Keys.A, KeyState.Down));
@@ -134,7 +159,8 @@ namespace NekoMacro.ViewModels
             macros.AddCommand(new MouseCommand(MouseButton.Left, MouseDir.Down));
             macros.AddCommand(new DelayCommand(50));
             macros.AddCommand(new MouseCommand(MouseButton.Left, MouseDir.Up));
-
+            MacrosList.SelectionChanged += MacrosListOnSelectionChanged;
+            MacrosList.CollectionChanged += MacrosListOnCollectionChanged;
             MacrosList.Add(macros);
             MacrosList.SetSelectedToFirst();
 
@@ -143,7 +169,36 @@ namespace NekoMacro.ViewModels
             MouseVisibility = Visibility.Collapsed;
             DelayVisibility = Visibility.Collapsed;
         }
-        
+
+        private void MacrosListOnCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+        {
+            //Save
+        }
+
+        private void MacrosListOnSelectionChanged(ObservableCollectionWithSelectedItem<Macros> sender, Macros newselection, Macros oldselection)
+        {
+            if (oldselection != null)
+            {
+                oldselection.Commands.SelectionChanged  -= CommandsOnSelectionChanged;
+                oldselection.Commands.CollectionChanged -= CommandsOnCollectionChanged;
+            }
+
+            if (newselection == null)
+                return;
+            newselection.Commands.SelectionChanged += CommandsOnSelectionChanged;
+            newselection.Commands.CollectionChanged += CommandsOnCollectionChanged;
+        }
+
+        private void CommandsOnSelectionChanged(ObservableCollectionWithSelectedItem<Command> sender, Command newselection, Command oldselection)
+        {
+
+        }
+
+        private void CommandsOnCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+        {
+            //Save
+        }
+
         private void TypeListOnSelectionChanged(ObservableCollectionWithSelectedItem<TypeWrapper> sender, TypeWrapper newselection, TypeWrapper oldselection)
         {
             if (newselection.Type == CommandType.Key)
@@ -201,5 +256,58 @@ namespace NekoMacro.ViewModels
                     break;
             }
         }
+
+        public void OnDeleteCommand()
+        {
+            if (MacrosList?.SelectedItem?.Commands?.SelectedItem == null)
+                return;
+            var ind = MacrosList.SelectedItem.Commands.Position;
+            MacrosList.SelectedItem.Commands.Remove(MacrosList.SelectedItem.Commands.SelectedItem);
+            MacrosList.SelectedItem.Commands.SetSelectedToPosition(ind);
+        }
+
+        private void OnRecord()
+        {
+            IsRecord                         =  true;
+            GlobalDriver._driver.OnKeyPressed += DriverOnOnKeyPressed;
+        }
+
+        private void DriverOnOnKeyPressed(object sender, KeyPressedEventArgs e)
+        {
+            if (RecordDelay)
+            {
+                if(_dt == DateTime.MinValue)
+                    _dt = DateTime.Now;
+                else
+                {
+                    var cmdd = new DelayCommand((int)(DateTime.Now - _dt).TotalMilliseconds);
+                    
+                    Application.Current.Dispatcher.Invoke(() =>
+                    {
+                        if (MacrosList.SelectedItem.Commands.Position == -1)
+                            MacrosList.SelectedItem?.Commands.Add(cmdd);
+                        else
+                            MacrosList.SelectedItem?.Commands.Insert(MacrosList.SelectedItem.Commands.Position + 1, cmdd);
+                    });
+                    _dt = DateTime.Now;
+                }
+            }
+
+            var cmd = new KeyCommand(e.Key, e.State);
+            Application.Current.Dispatcher.Invoke(() =>
+                                                  {
+                                                      if (MacrosList.SelectedItem.Commands.Position == -1)
+                                                          MacrosList.SelectedItem?.Commands.Add(cmd);
+                                                      else
+                                                          MacrosList.SelectedItem?.Commands.Insert(MacrosList.SelectedItem.Commands.Position + 1, cmd);
+                                                  });
+        }
+
+        private void OnStopRecord()
+        {
+            GlobalDriver._driver.OnKeyPressed -= DriverOnOnKeyPressed;
+            IsRecord                         =  false;
+        }
+
     }
 }
