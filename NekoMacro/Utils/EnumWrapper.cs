@@ -34,5 +34,6 @@ namespace NekoMacro.Utils
         }
 
         public static List<EnumWrapper<T>> GetList() => Enum.GetValues(typeof(T)).Cast<T>().Select(_ => new EnumWrapper<T>(_)).ToList();
+        public static List<T> GetListBase() => Enum.GetValues(typeof(T)).Cast<T>().ToList();
     }
 }

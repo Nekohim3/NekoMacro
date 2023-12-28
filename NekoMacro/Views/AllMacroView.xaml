@@ -76,14 +76,17 @@
                 </Grid.RowDefinitions>
                 <Grid Grid.Row="0">
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto" MinWidth="50"/>
-                        <ColumnDefinition Width="Auto" MinWidth="50"/>
+                        <ColumnDefinition Width="0" MinWidth="0"/>
+                        <ColumnDefinition Width="Auto" MinWidth="20"/>
+                        <ColumnDefinition Width="Auto" MinWidth="20"/>
                         <ColumnDefinition Width="*"/>
                         <ColumnDefinition Width="Auto" MinWidth="50"/>
                         <ColumnDefinition Width="Auto" MinWidth="50"/>
                         <ColumnDefinition Width="Auto" MinWidth="50"/>
                     </Grid.ColumnDefinitions>
                     <Button Grid.Column="0" Content="Add"  IsEnabled="{Binding IsRecord, Converter={StaticResource BoolToReverseConverter}}"/>
+                    <Button Grid.Column="1" Content="В" Width="20" Command="{Binding UpCmd}" IsEnabled="{Binding IsRecord, Converter={StaticResource BoolToReverseConverter}}"/>
+                    <Button Grid.Column="2" Content="В" Width="20" Command="{Binding DownCmd}" IsEnabled="{Binding IsRecord, Converter={StaticResource BoolToReverseConverter}}"/>
                     <Button Grid.Column="4" Content="Stop" Command="{Binding StopRecordCmd}" Visibility="{Binding IsRecord, Converter={StaticResource BoolToVisibilityConverter}}"/>
                     <Button Grid.Column="4" Content="Record" Command="{Binding RecordCmd}" Visibility="{Binding IsRecord, Converter={StaticResource BoolToVisibilityReverseConverter}}"/>
                     <CheckBox Grid.Column="5" Content="Record delay" Margin="3,0,3,0" IsChecked="{Binding RecordDelay}"/>
@@ -106,7 +109,7 @@
                             <RowDefinition Height="Auto"/>
                             <RowDefinition Height="Auto"/>
                         </Grid.RowDefinitions>
-                        <ComboBox ItemsSource="{Binding TypeList}" SelectedItem="{Binding TypeList.SelectedItem}" Margin="1"/>
+                        <ComboBox ItemsSource="{Binding TypeList}" SelectedItem="{Binding SelectedType}" Margin="1"/>
                         <!-- type -->
                         <Grid Grid.Row="1" Visibility="{Binding KeyVisibility}">
                             <!-- key -->
@@ -121,9 +124,9 @@
                                 <RowDefinition Height="Auto"/>
                             </Grid.RowDefinitions>
                             <TextBlock Grid.Row="0" Grid.Column="0" Text="Key" VerticalAlignment="Center" Margin="3"/>
-                            <ComboBox Grid.Row="0" Grid.Column="1" ItemsSource="{Binding KeyList}" SelectedItem="{Binding KeyList.SelectedItem}"/>
+                            <ComboBox Grid.Row="0" Grid.Column="1" ItemsSource="{Binding KeyList}" SelectedItem="{Binding SelectedKey}"/>
                             <TextBlock Grid.Row="1" Grid.Column="0" Text="Dir" VerticalAlignment="Center" Margin="3"/>
-                            <ComboBox Grid.Row="1" Grid.Column="1" ItemsSource="{Binding KeyStateList}" SelectedItem="{Binding KeyStateList.SelectedItem}"/>
+                            <ComboBox Grid.Row="1" Grid.Column="1" ItemsSource="{Binding KeyStateList}" SelectedItem="{Binding SelectedKeyState}"/>
                         </Grid>
                         <Grid Grid.Row="1" Visibility="{Binding MouseVisibility}">
                             <!-- mouse -->
@@ -137,9 +140,9 @@
                                 <RowDefinition Height="Auto"/>
                             </Grid.RowDefinitions>
                             <TextBlock Grid.Row="0" Grid.Column="0" Text="Key" VerticalAlignment="Center" Margin="3"/>
-                            <ComboBox Grid.Row="0" Grid.Column="1" ItemsSource="{Binding MouseButtonList}" SelectedItem="{Binding MouseButtonList.SelectedItem}"/>
+                            <ComboBox Grid.Row="0" Grid.Column="1" ItemsSource="{Binding MouseButtonList}" SelectedItem="{Binding SelectedMouseButton}"/>
                             <TextBlock Grid.Row="1" Grid.Column="0" Text="Dir" VerticalAlignment="Center" Margin="3"/>
-                            <ComboBox Grid.Row="1" Grid.Column="1" ItemsSource="{Binding MouseDirList}" SelectedItem="{Binding MouseDirList.SelectedItem}"/>
+                            <ComboBox Grid.Row="1" Grid.Column="1" ItemsSource="{Binding MouseDirList}" SelectedItem="{Binding SelectedMouseDir}"/>
                         </Grid>
                         <Grid Grid.Row="1" Visibility="{Binding DelayVisibility}">
                             <Grid.RowDefinitions>
@@ -150,7 +153,14 @@
                             <!-- delay -->
 
                         </Grid>
-                        <Button Grid.Row="1" HorizontalAlignment="Right" Grid.RowSpan="2" Height="Auto" Margin="1" Width="50" Content="Add" Command="{Binding AddCommandCmd}"/>
+                        <Grid Grid.Row="1" HorizontalAlignment="Right" Width="52" Height="Auto">
+                            <Grid.RowDefinitions>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                            </Grid.RowDefinitions>
+                            <Button Grid.Row="0" HorizontalAlignment="Right" Margin="1" Width="50" Content="Add" Command="{Binding AddCommandCmd}"/>
+                            <Button Grid.Row="1" HorizontalAlignment="Right" Margin="1" Width="50" Content="Save" Command="{Binding SaveCommandCmd}"/>
+                        </Grid>
                     </Grid>
                 </GroupBox>
             </Grid>

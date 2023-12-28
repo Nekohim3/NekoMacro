@@ -4,10 +4,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using NekoMacro.Utils;
+using Newtonsoft.Json;
 using ReactiveUI;
 
 namespace NekoMacro.MacrosBase
 {
+    [JsonObject]
     public class Macros : ReactiveObject
     {
         private string _name;
@@ -25,6 +27,7 @@ namespace NekoMacro.MacrosBase
         }
 
         private bool _hideDelay;
+        [JsonIgnore]
         public bool HideDelay
         {
             get => _hideDelay;

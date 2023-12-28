@@ -28,19 +28,27 @@ namespace NekoMacro.MacrosBase
     public abstract class Command : ReactiveObject
     {
         private CommandStatus _status;
+        [JsonIgnore]
         public CommandStatus Status
         {
             get => _status;
             set => this.RaiseAndSetIfChanged(ref _status, value);
         }
 
+        [JsonIgnore]
         public abstract CommandType Type { get; }
 
+        [JsonIgnore]
         public abstract string TypeE  { get; }
+        [JsonIgnore]
         public abstract string KeyE   { get; }
+        [JsonIgnore]
         public abstract string DirE { get; }
+        [JsonIgnore]
         public virtual  string XE     { get; }
+        [JsonIgnore]
         public virtual  string YE     { get; }
+        [JsonIgnore]
         public virtual  string AbsE   { get; }
 
         public abstract void Execute();
