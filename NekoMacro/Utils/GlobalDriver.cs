@@ -11,6 +11,10 @@ namespace NekoMacro
     {
         public static Input _driver;
 
+        public static bool Shift;
+        public static bool Ctrl;
+        public static bool Alt;
+
         public static void Load(KeyboardFilterMode                  keyFilterMode     = KeyboardFilterMode.All,
                                 MouseFilterMode                     mouseFilterMode   = MouseFilterMode.All,
                                 int                                 keyPressDelay     = 50,
@@ -30,6 +34,8 @@ namespace NekoMacro
                           ScrollDelay        = scrollDelay
                       };
 
+            _driver.OnKeyPressed += DriverOnOnKeyPressed;
+
             if (keyPressHandler != null)
                 KeyPressSubscribe(keyPressHandler);
             if (mousePressHandler != null)
@@ -38,6 +44,16 @@ namespace NekoMacro
             _driver.Load();
         }
 
+        private static void DriverOnOnKeyPressed(object sender, KeyPressedEventArgs e)
+        {
+            if (e.Key == Keys.LeftShift || e.Key == Keys.RightShift)
+                Shift = e.State == KeyState.Down;
+            else if (e.Key == Keys.RightAlt)
+                Alt = e.State == KeyState.Down;
+            else if (e.Key == Keys.Control)
+                Ctrl = e.State == KeyState.Down;
+        }
+        
         public static void Unload()
         {
             if (_driver == null || !_driver.IsLoaded)

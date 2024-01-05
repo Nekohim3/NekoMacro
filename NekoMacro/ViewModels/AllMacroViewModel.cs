@@ -207,6 +207,30 @@ namespace NekoMacro.ViewModels
             set => this.RaiseAndSetIfChanged(ref _isRecord, value);
         }
 
+        private bool _shift;
+
+        public bool Shift
+        {
+            get => _shift;
+            set => this.RaiseAndSetIfChanged(ref _shift, value);
+        }
+
+        private bool _ctrl;
+
+        public bool Ctrl
+        {
+            get => _ctrl;
+            set => this.RaiseAndSetIfChanged(ref _ctrl, value);
+        }
+
+        private bool _alt;
+
+        public bool Alt
+        {
+            get => _alt;
+            set => this.RaiseAndSetIfChanged(ref _alt, value);
+        }
+
         public ReactiveCommand<Unit, Unit> AddCommandCmd  { get; }
         public ReactiveCommand<Unit, Unit> RecordCmd      { get; }
         public ReactiveCommand<Unit, Unit> StopRecordCmd  { get; }
@@ -219,12 +243,16 @@ namespace NekoMacro.ViewModels
 
         public AllMacroViewModel()
         {
-            AddCommandCmd  = ReactiveCommand.Create(OnAddCommand);
-            RecordCmd      = ReactiveCommand.Create(OnRecord);
-            StopRecordCmd  = ReactiveCommand.Create(OnStopRecord);
-            SaveCommandCmd = ReactiveCommand.Create(OnSaveCommand);
-            UpCmd          = ReactiveCommand.Create(OnUp);
-            DownCmd        = ReactiveCommand.Create(OnDown);
+            AddCommandCmd                       =  ReactiveCommand.Create(OnAddCommand);
+            RecordCmd                           =  ReactiveCommand.Create(OnRecord);
+            StopRecordCmd                       =  ReactiveCommand.Create(OnStopRecord);
+            SaveCommandCmd                      =  ReactiveCommand.Create(OnSaveCommand);
+            UpCmd                               =  ReactiveCommand.Create(OnUp);
+            DownCmd                             =  ReactiveCommand.Create(OnDown);
+            GlobalDriver.KeyPressSubscribe(DriverOnOnKeyPressed);
+            GlobalDriver.MousePressSubscribe(DriverOnOnMousePressed);
+            //GlobalDriver._driver.OnKeyPressed   += DriverOnOnKeyPressed;
+            //GlobalDriver._driver.OnMousePressed += DriverOnOnMousePressed;
             //MacrosList     = new ObservableCollectionWithSelectedItem<Macros>();
             //var macros = new Macros("Test macros");
             //macros.AddCommand(new KeyCommand(Keys.A, KeyState.Down));
@@ -341,38 +369,90 @@ namespace NekoMacro.ViewModels
         private void OnRecord()
         {
             IsRecord                         =  true;
-            //GlobalDriver._driver.OnKeyPressed += DriverOnOnKeyPressed;
+        }
+
+        private void DriverOnOnMousePressed(object sender, MousePressedEventArgs e)
+        {
+            if (IsRecord)
+            {
+                var mb = e.State.GetButtonFromState();
+                var md = e.State.GetDirectionFromState();
+                var cmd = new MouseCommand(mb, md);
+                Application.Current.Dispatcher.Invoke(() =>
+                {
+                    if (MacrosList.SelectedItem.Commands.Position == -1)
+                        MacrosList.SelectedItem?.Commands.Add(cmd);
+                    else
+                        MacrosList.SelectedItem?.Commands.Insert(MacrosList.SelectedItem.Commands.Position + 1, cmd);
+                });
+
+                var cmdd = new DelayCommand(md == MouseDir.Down ? 50 : 150);
+                Application.Current.Dispatcher.Invoke(() =>
+                {
+                    if (MacrosList.SelectedItem.Commands.Position == -1)
+                        MacrosList.SelectedItem?.Commands.Add(cmdd);
+                    else
+                        MacrosList.SelectedItem?.Commands.Insert(MacrosList.SelectedItem.Commands.Position + 1, cmdd);
+                });
+            }
+            else
+            {
+
+            }
         }
 
         private void DriverOnOnKeyPressed(object sender, KeyPressedEventArgs e)
         {
-            if (RecordDelay)
+            //GlobalDriver.Unload();
+            if (IsRecord)
             {
-                if(_dt == DateTime.MinValue)
-                    _dt = DateTime.Now;
+                var cmd = new KeyCommand(e.Key, e.State);
+                Application.Current.Dispatcher.Invoke(() =>
+                {
+                    if (MacrosList.SelectedItem.Commands.Position == -1)
+                        MacrosList.SelectedItem?.Commands.Add(cmd);
+                    else
+                        MacrosList.SelectedItem?.Commands.Insert(MacrosList.SelectedItem.Commands.Position + 1, cmd);
+                });
+                
+                var cmdd = new DelayCommand(e.State == KeyState.Down ? 50 : 150);
+                Application.Current.Dispatcher.Invoke(() =>
+                {
+                    if (MacrosList.SelectedItem.Commands.Position == -1)
+                        MacrosList.SelectedItem?.Commands.Add(cmdd);
+                    else
+                        MacrosList.SelectedItem?.Commands.Insert(MacrosList.SelectedItem.Commands.Position + 1, cmdd);
+                });
+            }
+            else
+            {
+                if (GlobalDriver.Shift)
+                {
+                    if (e.Key == Keys.Insert && e.State == KeyState.Down)
+                    {
+                        if(IsRecord)
+                            OnStopRecord();
+                        else
+                            OnRecord();
+                    }
+                }
                 else
                 {
-                    var cmdd = new DelayCommand((int)(DateTime.Now - _dt).TotalMilliseconds);
-                    
-                    Application.Current.Dispatcher.Invoke(() =>
-                    {
-                        if (MacrosList.SelectedItem.Commands.Position == -1)
-                            MacrosList.SelectedItem?.Commands.Add(cmdd);
-                        else
-                            MacrosList.SelectedItem?.Commands.Insert(MacrosList.SelectedItem.Commands.Position + 1, cmdd);
-                    });
-                    _dt = DateTime.Now;
+                    if (e.Key == Keys.Delete && e.State == KeyState.Down)
+                        OnDeleteCommand();
                 }
+                
             }
+        }
 
-            var cmd = new KeyCommand(e.Key, e.State);
-            Application.Current.Dispatcher.Invoke(() =>
-                                                  {
-                                                      if (MacrosList.SelectedItem.Commands.Position == -1)
-                                                          MacrosList.SelectedItem?.Commands.Add(cmd);
-                                                      else
-                                                          MacrosList.SelectedItem?.Commands.Insert(MacrosList.SelectedItem.Commands.Position + 1, cmd);
-                                                  });
+        private void OnStartMacro()
+        {
+
+        }
+
+        private void OnStopMacro()
+        {
+
         }
 
         private void OnDown()

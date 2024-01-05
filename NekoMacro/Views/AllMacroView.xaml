@@ -59,7 +59,7 @@
                     <Button Grid.Column="0" Content="Add"/>
                     <Button Grid.Column="1" Content="Edit"/>
                 </Grid>
-                <DataGrid Grid.Row="1" Margin="0" ItemsSource="{Binding MacrosList}" SelectedItem="{Binding MacrosList.SelectedItem}" AutoGenerateColumns="False">
+                <DataGrid Grid.Row="1" IsReadOnly="True" Margin="0" ItemsSource="{Binding MacrosList}" SelectedItem="{Binding MacrosList.SelectedItem}" AutoGenerateColumns="False">
                     <DataGrid.Columns>
                         <DataGridTextColumn Header="Name" Binding="{Binding}" Width="*"/>
                     </DataGrid.Columns>
@@ -87,9 +87,9 @@
                     <Button Grid.Column="0" Content="Add"  IsEnabled="{Binding IsRecord, Converter={StaticResource BoolToReverseConverter}}"/>
                     <Button Grid.Column="1" Content="В" Width="20" Command="{Binding UpCmd}" IsEnabled="{Binding IsRecord, Converter={StaticResource BoolToReverseConverter}}"/>
                     <Button Grid.Column="2" Content="В" Width="20" Command="{Binding DownCmd}" IsEnabled="{Binding IsRecord, Converter={StaticResource BoolToReverseConverter}}"/>
-                    <Button Grid.Column="4" Content="Stop" Command="{Binding StopRecordCmd}" Visibility="{Binding IsRecord, Converter={StaticResource BoolToVisibilityConverter}}"/>
-                    <Button Grid.Column="4" Content="Record" Command="{Binding RecordCmd}" Visibility="{Binding IsRecord, Converter={StaticResource BoolToVisibilityReverseConverter}}"/>
-                    <CheckBox Grid.Column="5" Content="Record delay" Margin="3,0,3,0" IsChecked="{Binding RecordDelay}"/>
+                    <!--<Button Grid.Column="4" Content="Stop" Command="{Binding StopRecordCmd}" Visibility="{Binding IsRecord, Converter={StaticResource BoolToVisibilityConverter}}"/>
+                    <Button Grid.Column="4" Content="Record" Command="{Binding RecordCmd}" Visibility="{Binding IsRecord, Converter={StaticResource BoolToVisibilityReverseConverter}}"/>-->
+                    <!--<CheckBox Grid.Column="5" Content="Record delay" Margin="3,0,3,0" IsChecked="{Binding RecordDelay}"/>-->
                     <!--<CheckBox Grid.Column="3" Margin="3,0,3,0" Content="Hide delays" IsChecked="{Binding MacrosList.SelectedItem.HideDelay}"/>-->
                 </Grid>
                 <DataGrid Grid.Row="1" Margin="0" ItemsSource="{Binding MacrosList.SelectedItem.Commands}" SelectedItem="{Binding MacrosList.SelectedItem.Commands.SelectedItem}"  Style="{StaticResource CommandDataGridStyle}"  IsEnabled="{Binding IsRecord, Converter={StaticResource BoolToReverseConverter}}">
