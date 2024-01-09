@@ -2,24 +2,31 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reactive;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Forms;
 using System.Windows.Threading;
 using Interceptor;
 using NekoMacro.MacrosBase;
 using NekoMacro.Utils;
 using Newtonsoft.Json;
 using ReactiveUI;
+using Application = System.Windows.Application;
+using Keys = Interceptor.Keys;
 
 namespace NekoMacro.ViewModels
 {
 
     public class AllMacroViewModel : ReactiveObject
     {
+        private Thread                                       _mThread;
+        private bool                                         _work;
         private ObservableCollectionWithSelectedItem<Macros> _macrosList;
         public ObservableCollectionWithSelectedItem<Macros> MacrosList
         {
@@ -251,37 +258,55 @@ namespace NekoMacro.ViewModels
             DownCmd                             =  ReactiveCommand.Create(OnDown);
             GlobalDriver.KeyPressSubscribe(DriverOnOnKeyPressed);
             GlobalDriver.MousePressSubscribe(DriverOnOnMousePressed);
-            //GlobalDriver._driver.OnKeyPressed   += DriverOnOnKeyPressed;
-            //GlobalDriver._driver.OnMousePressed += DriverOnOnMousePressed;
-            //MacrosList     = new ObservableCollectionWithSelectedItem<Macros>();
-            //var macros = new Macros("Test macros");
-            //macros.AddCommand(new KeyCommand(Keys.A, KeyState.Down));
-            //macros.AddCommand(new DelayCommand(50));
-            //macros.AddCommand(new KeyCommand(Keys.A, KeyState.Up));
-            //macros.AddCommand(new DelayCommand(150));
-            //macros.AddCommand(new KeyCommand(Keys.B, KeyState.Down));
-            //macros.AddCommand(new DelayCommand(50));
-            //macros.AddCommand(new KeyCommand(Keys.B, KeyState.Up));
-            //macros.AddCommand(new DelayCommand(150));
-            //macros.AddCommand(new KeyCommand(Keys.Q, KeyState.Down));
-            //macros.AddCommand(new DelayCommand(50));
-            //macros.AddCommand(new KeyCommand(Keys.Q, KeyState.Up));
-            //macros.AddCommand(new DelayCommand(150));
-
-            //macros.AddCommand(new MouseCommand(MouseButton.Moving, MouseDir.None, 123, 234));
-            //macros.AddCommand(new DelayCommand(50));
-            //macros.AddCommand(new MouseCommand(MouseButton.Left, MouseDir.Down));
-            //macros.AddCommand(new DelayCommand(50));
-            //macros.AddCommand(new MouseCommand(MouseButton.Left, MouseDir.Up));
+            g.GHook.KeyDown += GHookOnKeyDown;
+            g.AHook.KeyDown += AHookOnKeyDown;
             Load();
-            //MacrosList.Add(macros);
-
-            //TypeList.SelectionChanged += TypeListOnSelectionChanged;
             KeyVisibility = Visibility.Visible;
             MouseVisibility = Visibility.Collapsed;
             DelayVisibility = Visibility.Collapsed;
         }
 
+        private void AHookOnKeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == System.Windows.Forms.Keys.Insert)
+            {
+                if (IsRecord)
+                    OnStopRecord();
+                else
+                    OnRecord();
+            }
+
+            if (IsRecord)
+                return;
+
+            if (e.KeyCode == System.Windows.Forms.Keys.Delete)
+            {
+                OnDeleteCommand();
+            }
+        }
+
+        private void GHookOnKeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == System.Windows.Forms.Keys.Insert && e.Shift)
+            {
+                Process.GetCurrentProcess().Kill();
+            }
+            
+            if (IsRecord)
+                return;
+
+            if (e.KeyCode == System.Windows.Forms.Keys.Home)
+            {
+                OnStartMacro();
+            }
+
+            if (e.KeyCode == System.Windows.Forms.Keys.End)
+            {
+                OnStopMacro();
+            }
+
+        }
+        
         private void MacrosListOnCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
             //Save
@@ -376,28 +401,38 @@ namespace NekoMacro.ViewModels
             if (IsRecord)
             {
                 var mb = e.State.GetButtonFromState();
+                if (mb == MouseButton.Moving || mb == MouseButton.Scroll)
+                    return;
                 var md = e.State.GetDirectionFromState();
                 var cmd = new MouseCommand(mb, md);
                 Application.Current.Dispatcher.Invoke(() =>
                 {
                     if (MacrosList.SelectedItem.Commands.Position == -1)
+                    {
                         MacrosList.SelectedItem?.Commands.Add(cmd);
+                        MacrosList.SelectedItem?.Commands.SetSelectedToLast();
+                    }
                     else
-                        MacrosList.SelectedItem?.Commands.Insert(MacrosList.SelectedItem.Commands.Position + 1, cmd);
+                    {
+                        MacrosList.SelectedItem?.Commands.Insert(MacrosList.SelectedItem.Commands.Position                + 1, cmd);
+                        MacrosList.SelectedItem?.Commands.SetSelectedToNext();
+                    }
                 });
 
                 var cmdd = new DelayCommand(md == MouseDir.Down ? 50 : 150);
                 Application.Current.Dispatcher.Invoke(() =>
                 {
                     if (MacrosList.SelectedItem.Commands.Position == -1)
+                    {
                         MacrosList.SelectedItem?.Commands.Add(cmdd);
+                        MacrosList.SelectedItem?.Commands.SetSelectedToLast();
+                    }
                     else
-                        MacrosList.SelectedItem?.Commands.Insert(MacrosList.SelectedItem.Commands.Position + 1, cmdd);
+                    {
+                        MacrosList.SelectedItem?.Commands.Insert(MacrosList.SelectedItem.Commands.Position                + 1, cmdd);
+                        MacrosList.SelectedItem?.Commands.SetSelectedToNext();
+                    }
                 });
-            }
-            else
-            {
-
             }
         }
 
@@ -406,53 +441,80 @@ namespace NekoMacro.ViewModels
             //GlobalDriver.Unload();
             if (IsRecord)
             {
+                if (e.State.HasFlag(KeyState.E0) || e.State.HasFlag(KeyState.E1))
+                    return;
                 var cmd = new KeyCommand(e.Key, e.State);
                 Application.Current.Dispatcher.Invoke(() =>
                 {
                     if (MacrosList.SelectedItem.Commands.Position == -1)
+                    {
                         MacrosList.SelectedItem?.Commands.Add(cmd);
+                        MacrosList.SelectedItem?.Commands.SetSelectedToLast();
+                    }
                     else
-                        MacrosList.SelectedItem?.Commands.Insert(MacrosList.SelectedItem.Commands.Position + 1, cmd);
+                    {
+                        MacrosList.SelectedItem?.Commands.Insert(MacrosList.SelectedItem.Commands.Position                + 1, cmd);
+                        MacrosList.SelectedItem?.Commands.SetSelectedToNext();
+                    }
                 });
                 
                 var cmdd = new DelayCommand(e.State == KeyState.Down ? 50 : 150);
                 Application.Current.Dispatcher.Invoke(() =>
                 {
                     if (MacrosList.SelectedItem.Commands.Position == -1)
-                        MacrosList.SelectedItem?.Commands.Add(cmdd);
-                    else
-                        MacrosList.SelectedItem?.Commands.Insert(MacrosList.SelectedItem.Commands.Position + 1, cmdd);
-                });
-            }
-            else
-            {
-                if (GlobalDriver.Shift)
-                {
-                    if (e.Key == Keys.Insert && e.State == KeyState.Down)
                     {
-                        if(IsRecord)
-                            OnStopRecord();
-                        else
-                            OnRecord();
+                        MacrosList.SelectedItem?.Commands.Add(cmdd);
+                        MacrosList.SelectedItem?.Commands.SetSelectedToLast();
                     }
-                }
-                else
-                {
-                    if (e.Key == Keys.Delete && e.State == KeyState.Down)
-                        OnDeleteCommand();
-                }
-                
+                    else
+                    {
+                        MacrosList.SelectedItem?.Commands.Insert(MacrosList.SelectedItem.Commands.Position                + 1, cmdd);
+                        MacrosList.SelectedItem?.Commands.SetSelectedToNext();
+                    }
+                });
             }
         }
 
         private void OnStartMacro()
         {
-
+            if (_work)
+                return;
+            _work    = true;
+            _mThread = new Thread(MacroThread);
+            _mThread.Start();
         }
 
         private void OnStopMacro()
         {
+            if (!_work)
+                return;
+            _work = false;
+        }
 
+        private void MacroThread()
+        {
+            while (_work)
+            {
+                foreach (var x in MacrosList.SelectedItem.Commands)
+                {
+                    if (x is KeyCommand kcmd)
+                    {
+                        GlobalDriver._driver.SendKey(kcmd.Key, kcmd.State, false);
+                        if(kcmd.State == KeyState.Up && ! _work)
+                            break;
+                    }
+                    else if (x is MouseCommand mcmd)
+                    {
+                        GlobalDriver._driver.SendMouseEvent(mcmd.Button, mcmd.Dir);
+                        if(mcmd.Dir == MouseDir.Up && !_work)
+                            break;
+                    }
+                    else if (x is DelayCommand dcmd)
+                    {
+                        Thread.Sleep(dcmd.Delay);
+                    }
+                }
+            }
         }
 
         private void OnDown()
@@ -477,7 +539,6 @@ namespace NekoMacro.ViewModels
 
         private void OnStopRecord()
         {
-            //GlobalDriver._driver.OnKeyPressed -= DriverOnOnKeyPressed;
             IsRecord                         =  false;
             Save();
         }

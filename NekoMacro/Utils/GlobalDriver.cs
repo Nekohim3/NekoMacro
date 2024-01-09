@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -17,8 +18,8 @@ namespace NekoMacro
 
         public static void Load(KeyboardFilterMode                  keyFilterMode     = KeyboardFilterMode.All,
                                 MouseFilterMode                     mouseFilterMode   = MouseFilterMode.All,
-                                int                                 keyPressDelay     = 50,
-                                int                                 clickDelay        = 100,
+                                int                                 keyPressDelay     = 0,
+                                int                                 clickDelay        = 0,
                                 int                                 scrollDelay       = 50,
                                 EventHandler<KeyPressedEventArgs>   keyPressHandler   = null,
                                 EventHandler<MousePressedEventArgs> mousePressHandler = null)
@@ -34,7 +35,7 @@ namespace NekoMacro
                           ScrollDelay        = scrollDelay
                       };
 
-            _driver.OnKeyPressed += DriverOnOnKeyPressed;
+            //_driver.OnKeyPressed += DriverOnOnKeyPressed;
 
             if (keyPressHandler != null)
                 KeyPressSubscribe(keyPressHandler);
@@ -44,15 +45,18 @@ namespace NekoMacro
             _driver.Load();
         }
 
-        private static void DriverOnOnKeyPressed(object sender, KeyPressedEventArgs e)
-        {
-            if (e.Key == Keys.LeftShift || e.Key == Keys.RightShift)
-                Shift = e.State == KeyState.Down;
-            else if (e.Key == Keys.RightAlt)
-                Alt = e.State == KeyState.Down;
-            else if (e.Key == Keys.Control)
-                Ctrl = e.State == KeyState.Down;
-        }
+        //private static void DriverOnOnKeyPressed(object sender, KeyPressedEventArgs e)
+        //{
+        //    Logger.Info($"{e.Key}:{e.State}");
+        //    if (e.Key == Keys.LeftShift || e.Key == Keys.RightShift)
+        //        Shift = e.State == KeyState.Down;
+        //    if (e.Key == Keys.RightAlt)
+        //        Alt = e.State == KeyState.Down;
+        //    if (e.Key == Keys.Control)
+        //        Ctrl = e.State == KeyState.Down;
+        //    //if(Shift && e.Key == Keys.Insert && e.State == KeyState.Down)
+        //    //    Process.GetCurrentProcess().Kill();
+        //}
         
         public static void Unload()
         {

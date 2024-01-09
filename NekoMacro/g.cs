@@ -4,15 +4,20 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows.Forms;
+using Gma.System.MouseKeyHook;
 using NekoMacro.UI;
 
 namespace NekoMacro
 {
     public static class g
     {
-        public static Settings   Settings   { get; set; }
-        public static string     CompName   => Environment.MachineName;
-        public static TabManager TabManager { get; set; }
+        public static Settings             Settings   { get; set; }
+        public static string               CompName   => Environment.MachineName;
+        public static TabManager           TabManager { get; set; }
+        public static IKeyboardMouseEvents GHook;
+        public static IKeyboardMouseEvents AHook;
+
 
         public static LoadingControlViewModel LoadingControlVM { get; set; }
         public static NMsgViewModel           NMsgVM           { get; set; }
@@ -24,8 +29,20 @@ namespace NekoMacro
         {
             Settings = Settings.Load() ?? new Settings();
             Logger.Info("Settings loaded");
+            GHook      = Hook.GlobalEvents();
+            AHook = Hook.AppEvents();
             TabManager = new TabManager();
             TabManager.InitTabs();
+        }
+
+        public static void StartHook()
+        {
+            //GHook.MouseDown  += GHook_MouseDown;
+            //GHook.MouseUp    += GHook_MouseUp;
+            //GHook.KeyDown    += GHook_KeyDown;
+            //GHook.KeyUp      += GHook_KeyUp;
+            //GHook.MouseMove  += GHook_MouseMove;
+            //GHook.MouseWheel += GHook_MouseWheel;
         }
 
         public static void StartLongOperation(Action act, Action fin = null)
