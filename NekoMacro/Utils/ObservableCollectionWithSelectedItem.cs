@@ -253,4 +253,110 @@ namespace NekoMacro.Utils
 
         #endregion
     }
+
+    public class ObservableCollectionWithMultiSelectedItem<T> : ObservableCollection<T> where T : class
+    {
+        public delegate bool                  SelectionChangingHandler(ObservableCollectionWithMultiSelectedItem<T> sender, IList<T> addedItems, IList<T> removedItems);
+        public event SelectionChangingHandler SelectionChanging;
+
+        public delegate void                SelectedChangedHandler(ObservableCollectionWithMultiSelectedItem<T> sender, IList<T> addedItems, IList<T> removedItems);
+        public event SelectedChangedHandler SelectionChanged;
+
+        private ObservableCollectionWithMultiSelectedItem<T> _selectedItems = new ObservableCollectionWithMultiSelectedItem<T>();
+
+        public ObservableCollectionWithMultiSelectedItem<T> SelectedItems
+        {
+            get => _selectedItems;
+            set
+            {
+                _selectedItems = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public ObservableCollectionWithMultiSelectedItem() : base()
+        {
+
+        }
+
+        public ObservableCollectionWithMultiSelectedItem(IEnumerable<T> list) : base(list)
+        {
+
+        }
+
+        public new void Clear()
+        {
+            ClearSelection();
+            base.Clear();
+        }
+
+        public void SetRange(IEnumerable<T> list)
+        {
+            Clear();
+            this.AddRange(list);
+        }
+
+        public void AddSelected(T item)
+        {
+            if (item != null)
+            {
+                var oldItems = new List<T>();
+                var res = SelectionChanging?.Invoke(this, new List<T>() { item }, oldItems) ?? true;
+                if (res)
+                {
+                    SelectedItems.Add(item);
+                    SelectionChanged?.Invoke(this, new List<T>() { item }, oldItems);
+                }
+            }
+        }
+
+        public void AddSelected(IEnumerable<T> items)
+        {
+            if (items == null) return;
+            foreach (var x in items)
+            {
+                if (x == null) continue;
+                AddSelected(x);
+            }
+        }
+
+        public void RemoveSelected(T item)
+        {
+            if (item != null)
+            {
+                var res = SelectionChanging?.Invoke(this, new List<T>(), new List<T>() { item }) ?? true;
+                if (res)
+                {
+                    SelectedItems.Remove(item);
+                    SelectionChanged?.Invoke(this, new List<T>(), new List<T>() { item });
+                }
+            }
+            OnPropertyChanged("SelectedItem");
+        }
+
+        public void RemoveSelected(IEnumerable<T> items)
+        {
+            if (items == null) return;
+            foreach (var x in items)
+            {
+                if (x == null) continue;
+                RemoveSelected(x);
+            }
+        }
+
+        public void ClearSelection()
+        {
+            foreach (var x in SelectedItems.ToList())
+                SelectedItems.Remove(x);
+            OnPropertyChanged("SelectedItems");
+        }
+
+
+        protected override event PropertyChangedEventHandler PropertyChanged;
+
+        public void OnPropertyChanged([CallerMemberName] string prop = "")
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(prop));
+        }
+    }
 }

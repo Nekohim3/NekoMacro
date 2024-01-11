@@ -45,17 +45,25 @@ namespace NekoMacro.MacrosBase
             set => this.RaiseAndSetIfChanged(ref _delay, value);
         }
 
-        private int _delayAfter;
-        public int DelayAfter
+        private int _clickDelay;
+        public int ClickDelay
         {
-            get => _delayAfter;
-            set => this.RaiseAndSetIfChanged(ref _delayAfter, value);
+            get => _clickDelay;
+            set => this.RaiseAndSetIfChanged(ref _clickDelay, value);
         }
 
-        public abstract string Text { get; }
+        private BaseCmd _parent;
+        public BaseCmd Parent
+        {
+            get => _parent;
+            set => this.RaiseAndSetIfChanged(ref _parent, value);
+        }
 
-        [JsonIgnore]
-        public abstract CmdType CmdType { get; }
+
+
+        public virtual string Text => $"{(Ctrl ? "Ctrl+" : "")}{(Alt ? "Alt+" : "")}{(Shift ? "Shift+" : "")}";
+
+        [JsonIgnore] public abstract CmdType CmdType { get; }
 
         public abstract void Execute();
     }

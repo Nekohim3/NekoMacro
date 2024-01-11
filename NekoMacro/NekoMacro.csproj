@@ -64,8 +64,9 @@
     <Reference Include="Gma.System.MouseKeyHook, Version=5.7.1.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\MouseKeyHook.5.7.1\lib\net472\Gma.System.MouseKeyHook.dll</HintPath>
     </Reference>
-    <Reference Include="Interceptor">
-      <HintPath>..\..\NekoInterceptor\Interceptor\bin\x64\Release\Interceptor.dll</HintPath>
+    <Reference Include="Interceptor, Version=1.0.0.0, Culture=neutral, processorArchitecture=AMD64">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>F:\coding\interception\Interceptor\bin\x64\Release\Interceptor.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Bcl.AsyncInterfaces, Version=8.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.Bcl.AsyncInterfaces.8.0.0\lib\net462\Microsoft.Bcl.AsyncInterfaces.dll</HintPath>
@@ -211,11 +212,16 @@
     <Compile Include="MacrosBase\NewCmd\RepeatCmd.cs" />
     <Compile Include="Utils\EnumWrapper.cs" />
     <Compile Include="Utils\NumberTextBox.cs" />
+    <Compile Include="Utils\ObservableCollectionWithSelectedItem - Copy.cs" />
     <Compile Include="Utils\ObservableCollectionWithSelectedItem.cs" />
     <Compile Include="ViewModels\AllMacroViewModel.cs" />
+    <Compile Include="ViewModels\MacroEditViewModel.cs" />
     <Compile Include="ViewModels\SettingsViewModel.cs" />
     <Compile Include="Views\AllMacroView.xaml.cs">
       <DependentUpon>AllMacroView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\MacroEditor.xaml.cs">
+      <DependentUpon>MacroEditor.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\SettingsView.xaml.cs">
       <DependentUpon>SettingsView.xaml</DependentUpon>
@@ -273,6 +279,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\AllMacroView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\MacroEditor.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

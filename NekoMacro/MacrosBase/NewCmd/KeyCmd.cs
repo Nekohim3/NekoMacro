@@ -12,15 +12,15 @@ namespace NekoMacro.MacrosBase.NewCmd
     {
         public override CmdType CmdType => CmdType.Key;
 
-        public override string Text => $"{(Ctrl ? "Ctrl+" : "")}{(Alt ? "Alt+" : "")}{(Shift ? "Shift+" : "")}{Key}";
+        public override string Text => $"{base.Text}{Action}";
 
-        private Keys _key;
-        public Keys Key
+        private Keys _action;
+        public Keys Action
         {
-            get => _key;
+            get => _action;
             set
             {
-                this.RaiseAndSetIfChanged(ref _key, value);
+                this.RaiseAndSetIfChanged(ref _action, value);
                 this.RaisePropertyChanged(Text);
             }
         }

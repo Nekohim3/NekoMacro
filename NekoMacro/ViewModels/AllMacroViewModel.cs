@@ -72,26 +72,26 @@ namespace NekoMacro.ViewModels
             }
         }
 
-        private ObservableCollection<MouseButton> _mouseButtonList = new ObservableCollection<MouseButton>(EnumWrapper<MouseButton>.GetListBase());
-        public ObservableCollection<MouseButton> MouseButtonList
-        {
-            get => _mouseButtonList;
-            set => this.RaiseAndSetIfChanged(ref _mouseButtonList, value);
-        }
+        //private ObservableCollection<MouseButton> _mouseButtonList = new ObservableCollection<MouseButton>(EnumWrapper<MouseButton>.GetListBase());
+        //public ObservableCollection<MouseButton> MouseButtonList
+        //{
+        //    get => _mouseButtonList;
+        //    set => this.RaiseAndSetIfChanged(ref _mouseButtonList, value);
+        //}
 
-        private MouseButton? _selectedMouseButton;
-        public MouseButton? SelectedMouseButton
-        {
-            get => _selectedMouseButton;
-            set
-            {
-                this.RaiseAndSetIfChanged(ref _selectedMouseButton, value);
+        //private MouseButton? _selectedMouseButton;
+        //public MouseButton? SelectedMouseButton
+        //{
+        //    get => _selectedMouseButton;
+        //    set
+        //    {
+        //        this.RaiseAndSetIfChanged(ref _selectedMouseButton, value);
 
-                if (value == null)
-                    return;
-                ((MouseCommand)CurrentCommand).Button = value.Value;
-            }
-        }
+        //        if (value == null)
+        //            return;
+        //        ((MouseCommand)CurrentCommand).Button = value.Value;
+        //    }
+        //}
 
         private ObservableCollection<MouseDir> _mouseDirList = new ObservableCollection<MouseDir>(EnumWrapper<MouseDir>.GetListBase());
         public ObservableCollection<MouseDir> MouseDirList
@@ -100,17 +100,17 @@ namespace NekoMacro.ViewModels
             set => this.RaiseAndSetIfChanged(ref _mouseDirList, value);
         }
 
-        private MouseDir? _selectedMouseDir;
-        public MouseDir? SelectedMouseDir
-        {
-            get => _selectedMouseDir;
-            set { this.RaiseAndSetIfChanged(ref _selectedMouseDir, value);
+        //private MouseDir? _selectedMouseDir;
+        //public MouseDir? SelectedMouseDir
+        //{
+        //    get => _selectedMouseDir;
+        //    set { this.RaiseAndSetIfChanged(ref _selectedMouseDir, value);
 
-                if (value == null)
-                    return;
-                ((MouseCommand)CurrentCommand).Dir = value.Value;
-            }
-        }
+        //        if (value == null)
+        //            return;
+        //        ((MouseCommand)CurrentCommand).Dir = value.Value;
+        //    }
+        //}
 
         private int _delay;
         public int Delay
@@ -151,7 +151,7 @@ namespace NekoMacro.ViewModels
                         KeyVisibility   = Visibility.Collapsed;
                         MouseVisibility = Visibility.Visible;
                         DelayVisibility = Visibility.Collapsed;
-                        CurrentCommand  = new MouseCommand(SelectedMouseButton.GetValueOrDefault(), SelectedMouseDir.GetValueOrDefault());
+                        //CurrentCommand  = new MouseCommand(SelectedMouseButton.GetValueOrDefault(), SelectedMouseDir.GetValueOrDefault());
                         break;
                     case CommandType.Delay:
                         KeyVisibility   = Visibility.Collapsed;
@@ -337,13 +337,13 @@ namespace NekoMacro.ViewModels
                 SelectedKey = kcmd.Key;
                 SelectedKeyState = kcmd.State;
             }
-            else if (newselection is MouseCommand mcmd)
-            {
-                CurrentCommand = new MouseCommand(mcmd.Button, mcmd.Dir, mcmd.X, mcmd.Y, mcmd.Abs);
-                SelectedType   = CommandType.Mouse;
-                SelectedMouseButton = mcmd.Button;
-                SelectedMouseDir = mcmd.Dir;
-            }
+            //else if (newselection is MouseCommand mcmd)
+            //{
+            //    CurrentCommand = new MouseCommand(mcmd.Button, mcmd.Dir, mcmd.X, mcmd.Y, mcmd.Abs);
+            //    SelectedType   = CommandType.Mouse;
+            //    SelectedMouseButton = mcmd.Button;
+            //    SelectedMouseDir = mcmd.Dir;
+            //}
             else if (newselection is DelayCommand dcmd)
             {
                 CurrentCommand = new DelayCommand(dcmd.Delay);
@@ -400,39 +400,39 @@ namespace NekoMacro.ViewModels
         {
             if (IsRecord)
             {
-                var mb = e.State.GetButtonFromState();
-                if (mb == MouseButton.Moving || mb == MouseButton.Scroll)
-                    return;
-                var md = e.State.GetDirectionFromState();
-                var cmd = new MouseCommand(mb, md);
-                Application.Current.Dispatcher.Invoke(() =>
-                {
-                    if (MacrosList.SelectedItem.Commands.Position == -1)
-                    {
-                        MacrosList.SelectedItem?.Commands.Add(cmd);
-                        MacrosList.SelectedItem?.Commands.SetSelectedToLast();
-                    }
-                    else
-                    {
-                        MacrosList.SelectedItem?.Commands.Insert(MacrosList.SelectedItem.Commands.Position                + 1, cmd);
-                        MacrosList.SelectedItem?.Commands.SetSelectedToNext();
-                    }
-                });
+                //var mb = e.State.GetButtonFromState();
+                //if (mb == MouseButton.Moving || mb == MouseButton.Scroll)
+                //    return;
+                //var md = e.State.GetDirectionFromState();
+                //var cmd = new MouseCommand(mb, md);
+                //Application.Current.Dispatcher.Invoke(() =>
+                //{
+                //    if (MacrosList.SelectedItem.Commands.Position == -1)
+                //    {
+                //        MacrosList.SelectedItem?.Commands.Add(cmd);
+                //        MacrosList.SelectedItem?.Commands.SetSelectedToLast();
+                //    }
+                //    else
+                //    {
+                //        MacrosList.SelectedItem?.Commands.Insert(MacrosList.SelectedItem.Commands.Position                + 1, cmd);
+                //        MacrosList.SelectedItem?.Commands.SetSelectedToNext();
+                //    }
+                //});
 
-                var cmdd = new DelayCommand(md == MouseDir.Down ? 50 : 150);
-                Application.Current.Dispatcher.Invoke(() =>
-                {
-                    if (MacrosList.SelectedItem.Commands.Position == -1)
-                    {
-                        MacrosList.SelectedItem?.Commands.Add(cmdd);
-                        MacrosList.SelectedItem?.Commands.SetSelectedToLast();
-                    }
-                    else
-                    {
-                        MacrosList.SelectedItem?.Commands.Insert(MacrosList.SelectedItem.Commands.Position                + 1, cmdd);
-                        MacrosList.SelectedItem?.Commands.SetSelectedToNext();
-                    }
-                });
+                //var cmdd = new DelayCommand(md == MouseDir.Down ? 50 : 150);
+                //Application.Current.Dispatcher.Invoke(() =>
+                //{
+                //    if (MacrosList.SelectedItem.Commands.Position == -1)
+                //    {
+                //        MacrosList.SelectedItem?.Commands.Add(cmdd);
+                //        MacrosList.SelectedItem?.Commands.SetSelectedToLast();
+                //    }
+                //    else
+                //    {
+                //        MacrosList.SelectedItem?.Commands.Insert(MacrosList.SelectedItem.Commands.Position                + 1, cmdd);
+                //        MacrosList.SelectedItem?.Commands.SetSelectedToNext();
+                //    }
+                //});
             }
         }
 
@@ -503,12 +503,12 @@ namespace NekoMacro.ViewModels
                         if(kcmd.State == KeyState.Up && ! _work)
                             break;
                     }
-                    else if (x is MouseCommand mcmd)
-                    {
-                        GlobalDriver._driver.SendMouseEvent(mcmd.Button, mcmd.Dir);
-                        if(mcmd.Dir == MouseDir.Up && !_work)
-                            break;
-                    }
+                    //else if (x is MouseCommand mcmd)
+                    //{
+                    //    GlobalDriver._driver.SendMouseEvent(mcmd.Button, mcmd.Dir);
+                    //    if(mcmd.Dir == MouseDir.Up && !_work)
+                    //        break;
+                    //}
                     else if (x is DelayCommand dcmd)
                     {
                         Thread.Sleep(dcmd.Delay);
@@ -569,11 +569,11 @@ namespace NekoMacro.ViewModels
                 macros.AddCommand(new KeyCommand(Keys.Q, KeyState.Up));
                 macros.AddCommand(new DelayCommand(150));
 
-                macros.AddCommand(new MouseCommand(MouseButton.Moving, MouseDir.None, 123, 234));
-                macros.AddCommand(new DelayCommand(50));
-                macros.AddCommand(new MouseCommand(MouseButton.Left, MouseDir.Down));
-                macros.AddCommand(new DelayCommand(50));
-                macros.AddCommand(new MouseCommand(MouseButton.Left, MouseDir.Up));
+                //macros.AddCommand(new MouseCommand(MouseButton.Moving, MouseDir.None, 123, 234));
+                //macros.AddCommand(new DelayCommand(50));
+                //macros.AddCommand(new MouseCommand(MouseButton.Left, MouseDir.Down));
+                //macros.AddCommand(new DelayCommand(50));
+                //macros.AddCommand(new MouseCommand(MouseButton.Left, MouseDir.Up));
                 MacrosList.Add(macros);
             }
 
