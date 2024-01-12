@@ -26,20 +26,8 @@ namespace NekoMacro.MacrosBase
             set => this.RaiseAndSetIfChanged(ref _desc, value);
         }
 
-        private bool _hideDelay;
-        [JsonIgnore]
-        public bool HideDelay
-        {
-            get => _hideDelay;
-            set
-            {
-                this.RaiseAndSetIfChanged(ref _hideDelay, value);
-                Commands.Filter = value ? (Func<Command, bool>)(c => !(c is DelayCommand)) : null;
-            }
-        }
-
-        private ObservableCollectionWithSelectedItem<Command> _commands;
-        public ObservableCollectionWithSelectedItem<Command> Commands
+        private ObservableCollectionWithMultiSelectedItem<BaseCmd> _commands;
+        public ObservableCollectionWithMultiSelectedItem<BaseCmd> Commands
         {
             get => _commands;
             set => this.RaiseAndSetIfChanged(ref _commands, value);
@@ -47,7 +35,7 @@ namespace NekoMacro.MacrosBase
 
         public Macros()
         {
-            Commands = new ObservableCollectionWithSelectedItem<Command>() { };
+            Commands = new ObservableCollectionWithMultiSelectedItem<BaseCmd>() { };
         }
 
 
@@ -62,7 +50,7 @@ namespace NekoMacro.MacrosBase
             _desc = desc;
         }
 
-        public void AddCommand(Command cmd)
+        public void AddCommand(BaseCmd cmd)
         {
             Commands.Add(cmd);
         }
