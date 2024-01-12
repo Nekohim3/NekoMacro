@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using NekoMacro.Utils;
 using Newtonsoft.Json;
 using ReactiveUI;
 
@@ -58,8 +59,13 @@ namespace NekoMacro.MacrosBase
             get => _parent;
             set => this.RaiseAndSetIfChanged(ref _parent, value);
         }
-
-
+        
+        private ObservableCollectionWithMultiSelectedItem<BaseCmd> _childs;
+        public ObservableCollectionWithMultiSelectedItem<BaseCmd> Childs
+        {
+            get => _childs;
+            set => this.RaiseAndSetIfChanged(ref _childs, value);
+        }
 
         public virtual string Text => $"{(Ctrl ? "Ctrl+" : "")}{(Alt ? "Alt+" : "")}{(Shift ? "Shift+" : "")}";
 

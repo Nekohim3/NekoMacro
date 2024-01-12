@@ -60,7 +60,17 @@
                     <Button Grid.Column="2" Content="Up" Width="50"/>
                     <Button Grid.Column="3" Content="Down" Width="50"/>-->
                 </Grid>
-                <DataGrid Grid.Row="1" SelectionChanged="Selector_OnSelectionChanged">
+                <utils:MultiSelectTreeView Grid.Row="1" ItemsSource="{Binding}">
+                    <utils:MultiSelectTreeView.ItemTemplate>
+                        <HierarchicalDataTemplate ItemsSource="{Binding}">
+                            <Grid>
+
+                            </Grid>
+                        </HierarchicalDataTemplate>
+                    </utils:MultiSelectTreeView.ItemTemplate>
+
+                </utils:MultiSelectTreeView>
+                <!--<DataGrid Grid.Row="1" SelectionChanged="Selector_OnSelectionChanged">
                     <DataGrid.Columns>
                         <DataGridTextColumn Header="Type" Width="Auto"/>
                         <DataGridTextColumn Header="Key" Width="Auto"/>
@@ -68,37 +78,66 @@
                         <DataGridTextColumn Header="Click delay" Width="Auto"/>
                         <DataGridTextColumn Header="Delay" Width="Auto"/>
                     </DataGrid.Columns>
-                </DataGrid>
+                </DataGrid>-->
             </Grid>
         </GroupBox>
         <Grid Grid.Column="2">
-            <Grid>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="*"/>
-                    <RowDefinition Height="*"/>
-                    <RowDefinition/>
-                </Grid.RowDefinitions>
-                <GroupBox Grid.Row="0" Header="">
-
+            <StackPanel>
+                <GroupBox Header="Record settings">
+                    <StackPanel>
+                        <GroupBox Header="Record delay">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition/>
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+                                <StackPanel Grid.Row="0" Grid.Column="0" Orientation="Vertical">
+                                    <RadioButton Content="Record delay" Margin="3"/>
+                                    <RadioButton Content="No delay" Margin="3"/>
+                                    <RadioButton Content="Fixed delay" Margin="3"/>
+                                </StackPanel>
+                                <Grid Grid.Row="1" Grid.Column="0" IsEnabled="{Binding}">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition/>
+                                        <RowDefinition/>
+                                    </Grid.RowDefinitions>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition/>
+                                        <ColumnDefinition/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Margin="5,3" Grid.Column="0" Grid.Row="0" Text="Click delay" VerticalAlignment="Center"/>
+                                    <TextBlock Margin="5,3" Grid.Column="0" Grid.Row="1" Text="Between delay" VerticalAlignment="Center"/>
+                                    <utils:IntegerTextBox Grid.Row="0" Grid.Column="1" VerticalAlignment="Bottom" Text="{Binding}" Width="50" HorizontalAlignment="Left" Margin="3"/>
+                                    <utils:IntegerTextBox Grid.Row="1" Grid.Column="1" VerticalAlignment="Bottom" Text="{Binding}" Width="50" HorizontalAlignment="Left" Margin="3"/>
+                                </Grid>
+                                <Grid Grid.Row="1" Grid.Column="1">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition/>
+                                        <RowDefinition/>
+                                    </Grid.RowDefinitions>
+                                    <Button Grid.Row="0" Content="Set for selected commands"/>
+                                    <Button Grid.Row="1" Content="Set for selected commands"/>
+                                </Grid>
+                            </Grid>
+                        </GroupBox>
+                        <GroupBox Header="Mouse">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition/>
+                                </Grid.ColumnDefinitions>
+                                <StackPanel Grid.Row="0" Grid.Column="0" Orientation="Vertical">
+                                    <CheckBox Content="Record coordinates on click" Margin="5"/>
+                                </StackPanel>
+                            </Grid>
+                        </GroupBox>
+                    </StackPanel>
                 </GroupBox>
-                <GroupBox Grid.Row="1" Header="">
-
-                </GroupBox>
-                <GroupBox Grid.Row="2" Header="Delay setting">
-                    <Grid>
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                        </Grid.RowDefinitions>
-                        <StackPanel Orientation="Vertical">
-                            <RadioButton Content="Record delay" Margin="5"/>
-                            <RadioButton Content="No delay" Margin="5"/>
-                            <RadioButton Content="Fixed delay" Margin="5"/>
-                            <utils:IntegerTextBox Text="{Binding Delay}" IsEnabled="{Binding}" Width="50" HorizontalAlignment="Left" Margin="25,0"/>
-                        </StackPanel>
-                    </Grid>
-                </GroupBox>
-            </Grid>
+            </StackPanel>
         </Grid>
     </Grid>
 </Page>

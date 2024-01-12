@@ -62,11 +62,11 @@ namespace NekoMacro.UI
             //    Page             = new DBCopyManagerView();
             //    Page.DataContext = new DBCopyManagerViewModel();
             //}
-            if (type == TabType.AllMacro)
-            {
-                Page             = new AllMacroView();
-                Page.DataContext = new AllMacroViewModel();
-            }
+            //if (type == TabType.AllMacro)
+            //{
+            //    Page             = new AllMacroView();
+            //    Page.DataContext = new AllMacroViewModel();
+            //}
             if (type == TabType.Settings)
             {
                 Page = new SettingsView();

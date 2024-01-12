@@ -28,9 +28,9 @@ namespace NekoMacro.Views
 
         private void AllMacroView_OnKeyDown(object sender, KeyEventArgs e)
         {
-            if(e.Key == Key.Delete)
-                if(DataContext is AllMacroViewModel vm)
-                    vm.OnDeleteCommand();
+        //    if(e.Key == Key.Delete)
+        //        if(DataContext is AllMacroViewModel vm)
+        //            vm.OnDeleteCommand();
         }
     }
 }

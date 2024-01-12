@@ -25,13 +25,6 @@ namespace NekoMacro.MacrosBase.NewCmd
             }
         }
 
-        private ObservableCollectionWithMultiSelectedItem<BaseCmd> _commandList;
-        public ObservableCollectionWithMultiSelectedItem<BaseCmd> CommandList
-        {
-            get => _commandList;
-            set => this.RaiseAndSetIfChanged(ref _commandList, value);
-        }
-
         public RepeatCmd()
         {
             

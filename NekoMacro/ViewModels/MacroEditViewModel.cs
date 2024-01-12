@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reactive;
 using System.Text;
 using System.Threading.Tasks;
 using NekoMacro.MacrosBase;
@@ -39,37 +40,58 @@ namespace NekoMacro.ViewModels
             set => this.RaiseAndSetIfChanged(ref _staticDelay, value);
         }
 
-        private int _delay;
-        public int Delay
+        private int _clickDelay;
+        public int ClickDelay
         {
-            get => _delay;
-            set => this.RaiseAndSetIfChanged(ref _delay, value);
+            get => _clickDelay;
+            set => this.RaiseAndSetIfChanged(ref _clickDelay, value);
         }
+
+        private int _betweenDelay;
+        public int BetweenDelay
+        {
+            get => _betweenDelay;
+            set => this.RaiseAndSetIfChanged(ref _betweenDelay, value);
+        }
+
+
+        public ReactiveCommand<Unit, Unit> AddMacrosCmd    { get; }
+        public ReactiveCommand<Unit, Unit> DeleteMacrosCmd { get; }
+        public ReactiveCommand<Unit, Unit> ImportCmd       { get; }
+        public ReactiveCommand<Unit, Unit> ExportCmd       { get; }
+        
+
 
         public MacroEditViewModel()
         {
-            
+
+            AddMacrosCmd    = ReactiveCommand.Create(OnAddMacros);
+            DeleteMacrosCmd = ReactiveCommand.Create(OnDeleteMacros);
+            ExportCmd       = ReactiveCommand.Create(OnExport);
+            ImportCmd       = ReactiveCommand.Create(OnImport);
         }
 
-        public ReactiveCommand<Unit, Unit> AddMacrosCmd { get; }
-
-        AddMacrosCmd = ReactiveCommand.Create(OnAddMacros);
+        
 
         private void OnAddMacros()
         {
 
         }
-
-        public ReactiveCommand<Unit, Unit> DeleteMacrosCmd { get; }
-
-        DeleteMacrosCmd = ReactiveCommand.Create(OnDeleteMacros);
-
+        
         private void OnDeleteMacros()
         {
 
         }
 
-        
-        
+        private void OnImport()
+        {
+
+        }
+
+        private void OnExport()
+        {
+
+        }
+
     }
 }
