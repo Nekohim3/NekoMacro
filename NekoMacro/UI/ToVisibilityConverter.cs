@@ -9,21 +9,21 @@ using NekoMacro.MacrosBase;
 
 namespace NekoMacro.UI
 {
-    [ValueConversion(typeof(CommandType), typeof(string))]
-    public class CommandTypeToStringConverter : IValueConverter
-    {
-        public object Convert(object                           value, Type targetType, object parameter,
-                              System.Globalization.CultureInfo culture)
-        {
-            return (value != null) ? value.ToString() : "";
-        }
+    //[ValueConversion(typeof(CommandType), typeof(string))]
+    //public class CommandTypeToStringConverter : IValueConverter
+    //{
+    //    public object Convert(object                           value, Type targetType, object parameter,
+    //                          System.Globalization.CultureInfo culture)
+    //    {
+    //        return (value != null) ? value.ToString() : "";
+    //    }
 
-        public object ConvertBack(object                           value, Type targetType, object parameter,
-                                  System.Globalization.CultureInfo culture)
-        {
-            throw new NotImplementedException();
-        }
-    }
+    //    public object ConvertBack(object                           value, Type targetType, object parameter,
+    //                              System.Globalization.CultureInfo culture)
+    //    {
+    //        throw new NotImplementedException();
+    //    }
+    //}
 
     [ValueConversion(typeof(bool), typeof(Visibility))]
     public class BoolToVisibilityConverter : IValueConverter

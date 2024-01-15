@@ -24,18 +24,18 @@ namespace NekoMacro
                                 EventHandler<KeyPressedEventArgs>   keyPressHandler   = null,
                                 EventHandler<MousePressedEventArgs> mousePressHandler = null)
         {
+            return;
             if (_driver != null && _driver.IsLoaded)
                 return;
             _driver = new Input
-                      {
-                          KeyboardFilterMode = keyFilterMode,
-                          MouseFilterMode    = mouseFilterMode,
-                          KeyPressDelay      = keyPressDelay,
-                          ClickDelay         = clickDelay,
-                          ScrollDelay        = scrollDelay
-                      };
+            {
+                KeyboardFilterMode = keyFilterMode,
+                MouseFilterMode = mouseFilterMode,
+                KeyPressDelay = keyPressDelay,
+                ClickDelay = clickDelay,
+                ScrollDelay = scrollDelay
+            };
 
-            //_driver.OnKeyPressed += DriverOnOnKeyPressed;
 
             if (keyPressHandler != null)
                 KeyPressSubscribe(keyPressHandler);
@@ -44,19 +44,6 @@ namespace NekoMacro
 
             _driver.Load();
         }
-
-        //private static void DriverOnOnKeyPressed(object sender, KeyPressedEventArgs e)
-        //{
-        //    Logger.Info($"{e.Key}:{e.State}");
-        //    if (e.Key == Keys.LeftShift || e.Key == Keys.RightShift)
-        //        Shift = e.State == KeyState.Down;
-        //    if (e.Key == Keys.RightAlt)
-        //        Alt = e.State == KeyState.Down;
-        //    if (e.Key == Keys.Control)
-        //        Ctrl = e.State == KeyState.Down;
-        //    //if(Shift && e.Key == Keys.Insert && e.State == KeyState.Down)
-        //    //    Process.GetCurrentProcess().Kill();
-        //}
         
         public static void Unload()
         {

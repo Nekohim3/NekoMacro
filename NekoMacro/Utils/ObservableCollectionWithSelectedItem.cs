@@ -262,9 +262,9 @@ namespace NekoMacro.Utils
         public delegate void                SelectedChangedHandler(ObservableCollectionWithMultiSelectedItem<T> sender, IList<T> addedItems, IList<T> removedItems);
         public event SelectedChangedHandler SelectionChanged;
 
-        private ObservableCollectionWithMultiSelectedItem<T> _selectedItems = new ObservableCollectionWithMultiSelectedItem<T>();
+        private ObservableCollection<T> _selectedItems = new ObservableCollection<T>();
 
-        public ObservableCollectionWithMultiSelectedItem<T> SelectedItems
+        public ObservableCollection<T> SelectedItems
         {
             get => _selectedItems;
             set

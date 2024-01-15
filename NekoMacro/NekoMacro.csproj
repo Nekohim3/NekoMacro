@@ -211,6 +211,7 @@
     <Compile Include="MacrosBase\NewCmd\MouseCmd.cs" />
     <Compile Include="MacrosBase\NewCmd\RepeatCmd.cs" />
     <Compile Include="Utils\EnumWrapper.cs" />
+    <Compile Include="Utils\GetMousePos.cs" />
     <Compile Include="Utils\MultiSelectTreeView.cs" />
     <Compile Include="Utils\NumberTextBox.cs" />
     <Compile Include="Utils\ObservableCollectionWithSelectedItem.cs" />
@@ -346,6 +347,8 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Utils\TreeGrid\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

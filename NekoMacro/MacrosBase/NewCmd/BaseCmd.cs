@@ -16,6 +16,7 @@ namespace NekoMacro.MacrosBase
         Repeat
     }
 
+    [JsonObject]
     public abstract class BaseCmd : ReactiveObject
     {
         private bool _ctrl;
@@ -61,13 +62,36 @@ namespace NekoMacro.MacrosBase
         }
         
         private ObservableCollectionWithMultiSelectedItem<BaseCmd> _childs;
-        public ObservableCollectionWithMultiSelectedItem<BaseCmd> Childs
+        public virtual ObservableCollectionWithMultiSelectedItem<BaseCmd> Childs
         {
             get => _childs;
             set => this.RaiseAndSetIfChanged(ref _childs, value);
         }
 
-        public virtual string Text => $"{(Ctrl ? "Ctrl+" : "")}{(Alt ? "Alt+" : "")}{(Shift ? "Shift+" : "")}";
+        protected BaseCmd(int delay, int clickDelay)
+        {
+            _delay      = delay;
+            _clickDelay = clickDelay;
+        }
+
+        protected BaseCmd(int delay, int clickDelay, bool ctrl = false, bool shift = false, bool alt = false)
+        {
+            _ctrl       = ctrl;
+            _shift      = shift;
+            _alt        = alt;
+            _delay      = delay;
+            _clickDelay = clickDelay;
+        }
+
+        public void AddChild(BaseCmd child)
+        {
+            if (Childs == null)
+                Childs = new ObservableCollectionWithMultiSelectedItem<BaseCmd>();
+            Childs.Add(child);
+            child.Parent = this;
+        }
+
+        [JsonIgnore] public virtual string Text => $"{(Ctrl ? "C" : "")}{(Alt ? "A" : "")}{(Shift ? "S" : "")}{(Ctrl || Alt || Shift ? "+" : "")}";
 
         [JsonIgnore] public abstract CmdType CmdType { get; }
 

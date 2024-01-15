@@ -40,7 +40,7 @@ namespace NekoMacro.UI
         {
             //TabList.Add(new Tab("Db manager", TabType.DbManager));
             //TabList.Add(new Tab("Db data copy", TabType.DbDataCopy));
-            TabList.Add(new Tab("All macros", TabType.AllMacro));
+            TabList.Add(new Tab("Macro editor", TabType.MacroEditor));
             TabList.Add(new Tab("Settings", TabType.Settings));
             //TabList.Add(new Tab("Settings",     TabType.Settings));
             //TabList.Add(new Tab("Settings",     TabType.Settings));

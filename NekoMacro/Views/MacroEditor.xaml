@@ -5,7 +5,8 @@
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       xmlns:local="clr-namespace:NekoMacro.Views"
       xmlns:utils="clr-namespace:NekoMacro.Utils"
-      mc:Ignorable="d" 
+      xmlns:viewModels="clr-namespace:NekoMacro.ViewModels"
+      mc:Ignorable="d" d:DataContext="{d:DesignInstance viewModels:MacroEditViewModel}"
       d:DesignHeight="720" d:DesignWidth="1280"
       Title="MacroEditor">
     <Grid>
@@ -33,7 +34,7 @@
                     <Button Grid.Column="2" Content="Import" Width="50"/>
                     <Button Grid.Column="3" Content="Export" Width="50"/>
                 </Grid>
-                <DataGrid Grid.Row="1">
+                <DataGrid Grid.Row="1" ItemsSource="{Binding MacrosList}" SelectedItem="{Binding MacrosList.SelectedItem}">
                     <DataGrid.Columns>
                         <DataGridTextColumn Header="Macros name" Width="Auto" MinWidth="100"/>
                         <DataGridTextColumn Header="Macros description" Width="*"/>
@@ -60,11 +61,20 @@
                     <Button Grid.Column="2" Content="Up" Width="50"/>
                     <Button Grid.Column="3" Content="Down" Width="50"/>-->
                 </Grid>
-                <utils:MultiSelectTreeView Grid.Row="1" ItemsSource="{Binding}">
+                <utils:MultiSelectTreeView Grid.Row="1" ItemsSource="{Binding MacrosList.SelectedItem.Commands}">
                     <utils:MultiSelectTreeView.ItemTemplate>
-                        <HierarchicalDataTemplate ItemsSource="{Binding}">
+                        <HierarchicalDataTemplate ItemsSource="{Binding Childs}">
                             <Grid>
-
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="50"/>
+                                    <ColumnDefinition Width="50"/>
+                                    <ColumnDefinition Width="50"/>
+                                    <ColumnDefinition />
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Grid.Column="0" Text="{Binding CmdType}"/>
+                                <TextBlock Grid.Column="1" Text="{Binding ClickDelay}"/>
+                                <TextBlock Grid.Column="2" Text="{Binding Delay}"/>
+                                <TextBlock Grid.Column="3" Text="{Binding Text}" HorizontalAlignment="Right" Margin="0,0,10,0"/>
                             </Grid>
                         </HierarchicalDataTemplate>
                     </utils:MultiSelectTreeView.ItemTemplate>
@@ -97,10 +107,9 @@
                                 </Grid.RowDefinitions>
                                 <StackPanel Grid.Row="0" Grid.Column="0" Orientation="Vertical">
                                     <RadioButton Content="Record delay" Margin="3"/>
-                                    <RadioButton Content="No delay" Margin="3"/>
                                     <RadioButton Content="Fixed delay" Margin="3"/>
                                 </StackPanel>
-                                <Grid Grid.Row="1" Grid.Column="0" IsEnabled="{Binding}">
+                                <Grid Grid.Row="1" Grid.Column="0" IsEnabled="true">
                                     <Grid.RowDefinitions>
                                         <RowDefinition/>
                                         <RowDefinition/>
@@ -111,16 +120,16 @@
                                     </Grid.ColumnDefinitions>
                                     <TextBlock Margin="5,3" Grid.Column="0" Grid.Row="0" Text="Click delay" VerticalAlignment="Center"/>
                                     <TextBlock Margin="5,3" Grid.Column="0" Grid.Row="1" Text="Between delay" VerticalAlignment="Center"/>
-                                    <utils:IntegerTextBox Grid.Row="0" Grid.Column="1" VerticalAlignment="Bottom" Text="{Binding}" Width="50" HorizontalAlignment="Left" Margin="3"/>
-                                    <utils:IntegerTextBox Grid.Row="1" Grid.Column="1" VerticalAlignment="Bottom" Text="{Binding}" Width="50" HorizontalAlignment="Left" Margin="3"/>
+                                    <utils:IntegerTextBox Grid.Row="0" Grid.Column="1" VerticalAlignment="Bottom" Text="{Binding ClickDelay}" Width="50" HorizontalAlignment="Left" Margin="3"/>
+                                    <utils:IntegerTextBox Grid.Row="1" Grid.Column="1" VerticalAlignment="Bottom" Text="{Binding BetweenDelay}" Width="50" HorizontalAlignment="Left" Margin="3"/>
                                 </Grid>
                                 <Grid Grid.Row="1" Grid.Column="1">
                                     <Grid.RowDefinitions>
                                         <RowDefinition/>
                                         <RowDefinition/>
                                     </Grid.RowDefinitions>
-                                    <Button Grid.Row="0" Content="Set for selected commands"/>
-                                    <Button Grid.Row="1" Content="Set for selected commands"/>
+                                    <Button Grid.Row="0" Content="Set for selected"/>
+                                    <Button Grid.Row="1" Content="Set for selected"/>
                                 </Grid>
                             </Grid>
                         </GroupBox>

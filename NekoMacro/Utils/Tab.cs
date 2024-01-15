@@ -16,7 +16,7 @@ namespace NekoMacro.UI
     public enum TabType
     {
         MacroCombo  = 0,
-        AllMacro = 1,
+        MacroEditor = 1,
         Settings   = 99
     }
 
@@ -67,6 +67,11 @@ namespace NekoMacro.UI
             //    Page             = new AllMacroView();
             //    Page.DataContext = new AllMacroViewModel();
             //}
+            if (type == TabType.MacroEditor)
+            {
+                Page             = new MacroEditor();
+                Page.DataContext = new MacroEditViewModel();
+            }
             if (type == TabType.Settings)
             {
                 Page = new SettingsView();

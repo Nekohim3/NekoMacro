@@ -12,20 +12,9 @@ namespace NekoMacro.MacrosBase.NewCmd
     {
         public override CmdType CmdType => CmdType.Repeat;
 
-        public override string Text => $"{Count} times";
-
-        private int _count;
-        public int Count
-        {
-            get => _count;
-            set
-            {
-                this.RaiseAndSetIfChanged(ref _count, value);
-                this.RaisePropertyChanged(Text);
-            }
-        }
-
-        public RepeatCmd()
+        public override string Text => $"{ClickDelay} times";
+        
+        public RepeatCmd(int delay, int count) : base(delay, count)
         {
             
         }
