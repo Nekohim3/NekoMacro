@@ -6,7 +6,9 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Gma.System.MouseKeyHook;
+using NekoMacro.MacrosBase;
 using NekoMacro.UI;
+using NekoMacro.Utils;
 
 namespace NekoMacro
 {
@@ -24,6 +26,7 @@ namespace NekoMacro
 
         public static NMsgReply MsgShow(string msg, string title, NMsgButtons buttons) => NMsgVM.Show(msg, title, buttons);
         public static NMsgReply MsgShow(string msg, string title) => NMsgVM.Show(msg, title);
+        
 
         public static void Init()
         {
@@ -58,6 +61,18 @@ namespace NekoMacro
                            LoadingControlVM.IsVisible   = false;
                            LoadingControlVM.LoadingText = "";
                        }).Start();
+        }
+
+        public static void BlockWindow(string text)
+        {
+            LoadingControlVM.IsVisible   = true;
+            LoadingControlVM.LoadingText = text;
+        }
+
+        public static void UnblockWindow()
+        {
+            LoadingControlVM.IsVisible   = false;
+            LoadingControlVM.LoadingText = "";
         }
     }
 }

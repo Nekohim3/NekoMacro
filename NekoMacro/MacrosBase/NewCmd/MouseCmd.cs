@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Interceptor;
 using NekoMacro.Utils;
+using Newtonsoft.Json;
 using ReactiveUI;
 
 namespace NekoMacro.MacrosBase.NewCmd
@@ -15,11 +16,11 @@ namespace NekoMacro.MacrosBase.NewCmd
 
         public override string Text => $"{base.Text}{Action}{(Action == MouseKey.Moving ? Pos.ToString() : "")}";
 
-        public override ObservableCollectionWithMultiSelectedItem<BaseCmd> Childs
-        {
-            get => null;
-            set => _ = value;
-        }
+        //public override ObservableCollectionWithMultiSelectedItem<BaseCmd> Childs
+        //{
+        //    get => null;
+        //    set => _ = value;
+        //}
 
         private MouseKey _action;
         public MouseKey Action
@@ -46,6 +47,7 @@ namespace NekoMacro.MacrosBase.NewCmd
             _pos = GetMousePos.GetNullPos();
         }
 
+        [JsonConstructor]
         public MouseCmd(MouseKey action, GetMousePos.POINT pos, int delay, int speed = 5000, bool ctrl = false, bool shift = false, bool alt = false) : base(delay, speed, ctrl, shift, alt)
         {
             _action = action;

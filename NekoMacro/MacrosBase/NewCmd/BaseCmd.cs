@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using NekoMacro.Utils;
+using NekoMacro.Utils.TreeDataGrid;
 using Newtonsoft.Json;
 using ReactiveUI;
 
@@ -17,7 +18,7 @@ namespace NekoMacro.MacrosBase
     }
 
     [JsonObject]
-    public abstract class BaseCmd : ReactiveObject
+    public abstract class BaseCmd : TreeGridElement
     {
         private bool _ctrl;
         public bool Ctrl
@@ -54,19 +55,21 @@ namespace NekoMacro.MacrosBase
             set => this.RaiseAndSetIfChanged(ref _clickDelay, value);
         }
 
-        private BaseCmd _parent;
-        public BaseCmd Parent
-        {
-            get => _parent;
-            set => this.RaiseAndSetIfChanged(ref _parent, value);
-        }
+        //private BaseCmd _parent;
+        //public BaseCmd Parent
+        //{
+        //    get => _parent;
+        //    set => this.RaiseAndSetIfChanged(ref _parent, value);
+        //}
         
-        private ObservableCollectionWithMultiSelectedItem<BaseCmd> _childs;
-        public virtual ObservableCollectionWithMultiSelectedItem<BaseCmd> Childs
-        {
-            get => _childs;
-            set => this.RaiseAndSetIfChanged(ref _childs, value);
-        }
+        //[JsonIgnore] public int Level => Parent?.Level + 1 ?? 0;
+
+        //private ObservableCollectionWithMultiSelectedItem<BaseCmd> _childs;
+        //public virtual ObservableCollectionWithMultiSelectedItem<BaseCmd> Childs
+        //{
+        //    get => _childs;
+        //    set => this.RaiseAndSetIfChanged(ref _childs, value);
+        //}
 
         protected BaseCmd(int delay, int clickDelay)
         {
@@ -83,13 +86,13 @@ namespace NekoMacro.MacrosBase
             _clickDelay = clickDelay;
         }
 
-        public void AddChild(BaseCmd child)
-        {
-            if (Childs == null)
-                Childs = new ObservableCollectionWithMultiSelectedItem<BaseCmd>();
-            Childs.Add(child);
-            child.Parent = this;
-        }
+        //public void AddChild(BaseCmd child)
+        //{
+        //    if (Childs == null)
+        //        Childs = new ObservableCollectionWithMultiSelectedItem<BaseCmd>();
+        //    Childs.Add(child);
+        //    child.Parent = this;
+        //}
 
         [JsonIgnore] public virtual string Text => $"{(Ctrl ? "C" : "")}{(Alt ? "A" : "")}{(Shift ? "S" : "")}{(Ctrl || Alt || Shift ? "+" : "")}";
 

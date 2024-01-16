@@ -6,20 +6,28 @@
       xmlns:local="clr-namespace:NekoMacro.Views"
       xmlns:utils="clr-namespace:NekoMacro.Utils"
       xmlns:viewModels="clr-namespace:NekoMacro.ViewModels"
+      xmlns:treeDataGrid="clr-namespace:NekoMacro.Utils.TreeDataGrid"
+      xmlns:ui="clr-namespace:NekoMacro.UI"
       mc:Ignorable="d" d:DataContext="{d:DesignInstance viewModels:MacroEditViewModel}"
-      d:DesignHeight="720" d:DesignWidth="1280"
+      d:DesignHeight="720" d:DesignWidth="900"
       Title="MacroEditor">
+    <Page.Resources>
+        <GridLength x:Key="TreeToggleWidth">20</GridLength>
+        <treeDataGrid:LevelConverter x:Key="LevelSpaceConverter" LevelWidth="{StaticResource TreeToggleWidth}"/>
+        <ui:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
+    </Page.Resources>
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition/>
-            <ColumnDefinition Width="300"/>
-            <ColumnDefinition Width="300"/>
+            <ColumnDefinition Width="350"/>
+            <ColumnDefinition Width="250"/>
         </Grid.ColumnDefinitions>
         <GroupBox Grid.Column="0" Header="Macros list">
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition/>
+                    <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
                 <Grid Grid.Row="0">
                     <Grid.ColumnDefinitions>
@@ -27,20 +35,41 @@
                         <ColumnDefinition Width="Auto"/>
                         <ColumnDefinition Width="Auto"/>
                         <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="Auto"/>
                         <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
-                    <Button Grid.Column="0" Content="Add" Width="50"/>
-                    <Button Grid.Column="1" Content="Delete" Width="50"/>
-                    <Button Grid.Column="2" Content="Import" Width="50"/>
-                    <Button Grid.Column="3" Content="Export" Width="50"/>
+                    <Button Grid.Column="0" Content="Add" Width="50" Command="{Binding AddMacrosCmd}"/>
+                    <Button Grid.Column="1" Content="Edit" Width="50" Command="{Binding EditMacrosCmd}"/>
+                    <Button Grid.Column="2" Content="Delete" Width="50" Margin="2,0,5,0" Command="{Binding DeleteMacrosCmd}"/>
+                    <Button Grid.Column="4" Content="Import" Width="50" Command="{Binding ImportCmd}"/>
+                    <Button Grid.Column="5" Content="Export" Width="50" Command="{Binding ExportCmd}"/>
                 </Grid>
                 <DataGrid Grid.Row="1" ItemsSource="{Binding MacrosList}" SelectedItem="{Binding MacrosList.SelectedItem}">
                     <DataGrid.Columns>
-                        <DataGridTextColumn Header="Macros name" Width="Auto" MinWidth="100"/>
-                        <DataGridTextColumn Header="Macros description" Width="*"/>
+                        <DataGridTextColumn Header="Macros name" Width="*" MinWidth="100" Binding="{Binding Name}"/>
                         <DataGridTextColumn Header="Hotkey" Width="Auto" MinWidth="100"/>
                     </DataGrid.Columns>
                 </DataGrid>
+                <GroupBox Grid.Row="2" Header="Add / edit macros" Visibility="{Binding IsEdit, Converter={StaticResource BoolToVisibilityConverter}}">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+                        <TextBlock Grid.Row="0" Grid.Column="0" Text="Name" Margin="3"/>
+                        <TextBox Grid.Row="0" Grid.Column="1" Margin="3" Text="{Binding MacrosName}"/>
+                        <StackPanel Grid.Row="1" Grid.Column="1"  Orientation="Horizontal" HorizontalAlignment="Right">
+                            <Button Content="Save" Width="50" Command="{Binding SaveMacrosCmd}"/>
+                            <Button Content="Cancel" Width="50" Margin="5,0" Command="{Binding CancelMacrosCmd}"/>
+                        </StackPanel>
+                    </Grid>
+                </GroupBox>
             </Grid>
         </GroupBox>
         <GroupBox Grid.Column="1" Header="Command list">
@@ -61,25 +90,34 @@
                     <Button Grid.Column="2" Content="Up" Width="50"/>
                     <Button Grid.Column="3" Content="Down" Width="50"/>-->
                 </Grid>
-                <utils:MultiSelectTreeView Grid.Row="1" ItemsSource="{Binding MacrosList.SelectedItem.Commands}">
-                    <utils:MultiSelectTreeView.ItemTemplate>
-                        <HierarchicalDataTemplate ItemsSource="{Binding Childs}">
-                            <Grid>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="50"/>
-                                    <ColumnDefinition Width="50"/>
-                                    <ColumnDefinition Width="50"/>
-                                    <ColumnDefinition />
-                                </Grid.ColumnDefinitions>
-                                <TextBlock Grid.Column="0" Text="{Binding CmdType}"/>
-                                <TextBlock Grid.Column="1" Text="{Binding ClickDelay}"/>
-                                <TextBlock Grid.Column="2" Text="{Binding Delay}"/>
-                                <TextBlock Grid.Column="3" Text="{Binding Text}" HorizontalAlignment="Right" Margin="0,0,10,0"/>
-                            </Grid>
-                        </HierarchicalDataTemplate>
-                    </utils:MultiSelectTreeView.ItemTemplate>
+                <DataGrid Grid.Row="1" ItemsSource="{Binding MacrosList.SelectedItem.Commands.FlatModel}" SelectionChanged="Selector_OnSelectionChanged">
+                    <DataGrid.Columns>
+                        <DataGridTemplateColumn Header="Action" Width="*">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="{Binding Level, Converter={StaticResource LevelSpaceConverter}}"/>
+                                            <ColumnDefinition Width="{StaticResource TreeToggleWidth}"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
 
-                </utils:MultiSelectTreeView>
+                                        <CheckBox 
+                                            Grid.Column="1"
+                                            IsChecked="{Binding IsExpanded, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                            Visibility="{Binding HasChilds, Converter={StaticResource BoolToVisibilityConverter}}"/>
+                                        <TextBlock
+                                            Grid.Column="2"
+                                            Text="{Binding Text}"/>
+                                    </Grid>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTextColumn Header="Type" Binding="{Binding CmdType}"/>
+                        <DataGridTextColumn Header="Click delay" Binding="{Binding ClickDelay}"/>
+                        <DataGridTextColumn Header="After delay" Binding="{Binding Delay}"/>
+                    </DataGrid.Columns>
+                </DataGrid>
                 <!--<DataGrid Grid.Row="1" SelectionChanged="Selector_OnSelectionChanged">
                     <DataGrid.Columns>
                         <DataGridTextColumn Header="Type" Width="Auto"/>
@@ -106,8 +144,8 @@
                                     <RowDefinition Height="Auto"/>
                                 </Grid.RowDefinitions>
                                 <StackPanel Grid.Row="0" Grid.Column="0" Orientation="Vertical">
-                                    <RadioButton Content="Record delay" Margin="3"/>
-                                    <RadioButton Content="Fixed delay" Margin="3"/>
+                                    <RadioButton Content="Record delay" Margin="3" IsChecked="{Binding RecordDelay}"/>
+                                    <RadioButton Content="Fixed delay" Margin="3" IsChecked="{Binding StaticDelay}"/>
                                 </StackPanel>
                                 <Grid Grid.Row="1" Grid.Column="0" IsEnabled="true">
                                     <Grid.RowDefinitions>
@@ -128,8 +166,8 @@
                                         <RowDefinition/>
                                         <RowDefinition/>
                                     </Grid.RowDefinitions>
-                                    <Button Grid.Row="0" Content="Set for selected"/>
-                                    <Button Grid.Row="1" Content="Set for selected"/>
+                                    <Button Grid.Row="0" Content="Set for selected" Command="{Binding SetClickDelayForSelectedCmd}"/>
+                                    <Button Grid.Row="1" Content="Set for selected" Command="{Binding SetBetweenDelayForSelectedCmd}"/>
                                 </Grid>
                             </Grid>
                         </GroupBox>
@@ -140,7 +178,45 @@
                                     <ColumnDefinition/>
                                 </Grid.ColumnDefinitions>
                                 <StackPanel Grid.Row="0" Grid.Column="0" Orientation="Vertical">
-                                    <CheckBox Content="Record coordinates on click" Margin="5"/>
+                                    <CheckBox Content="Record coordinates on click" Margin="5" IsChecked="{Binding RecordCoordOnClick}"/>
+                                </StackPanel>
+                            </Grid>
+                        </GroupBox>
+                        <GroupBox Header="Record insert position">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition/>
+                                </Grid.ColumnDefinitions>
+                                <StackPanel Grid.Row="0" Grid.Column="0" Orientation="Vertical">
+                                    <RadioButton Content="Insert before selected" Margin="3" IsChecked="{Binding InsertBeforeSelected}"/>
+                                    <RadioButton Content="Insert after selected" Margin="3" IsChecked="{Binding InsertAfterSelected}"/>
+                                </StackPanel>
+                            </Grid>
+                        </GroupBox>
+                        <GroupBox Header="Repeat" Visibility="{Binding RepeatVisible, Converter={StaticResource BoolToVisibilityConverter}}">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+                                <StackPanel Grid.Row="0" Grid.Column="0" Orientation="Vertical">
+                                    <Button Content="Set repeat for selected commands" Margin="2,2,2,2" Command="{Binding SetRepeatForSelectedCmd}" Height="20" SnapsToDevicePixels="True" RenderOptions.EdgeMode="Aliased"  Visibility="{Binding RepeatSetVisible, Converter={StaticResource BoolToVisibilityConverter}}"/>
+                                    <Button Content="Escape selected commands from repeat" Margin="2,2,2,2" Command="{Binding EscapeRepeatCmd}" RenderOptions.EdgeMode="Aliased"/>
+                                </StackPanel>
+                                <StackPanel Grid.Row="1" Grid.Column="0" Orientation="Vertical" Visibility="{Binding RepeatEditVisible, Converter={StaticResource BoolToVisibilityConverter}}">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock Grid.Column="0" Text="Count" Margin="2,2,0,2" VerticalAlignment="Center"/>
+                                        <Button Grid.Column="1" Content="Max" Width="50" Margin="3,2,0,2" Command="{Binding MaxRepeatCmd}"/>
+                                        <utils:IntegerTextBox Grid.Column="2" Margin="3,2,0,2" Text="{Binding RepeatCount}"/>
+                                        <Button Grid.Column="3" Content="Set" Width="50" Margin="3,2,2,2" Command="{Binding SetRepeatCmd}"/>
+                                    </Grid>
                                 </StackPanel>
                             </Grid>
                         </GroupBox>

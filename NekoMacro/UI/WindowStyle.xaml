@@ -193,7 +193,7 @@
                                             <RowDefinition Height="6*"/>
                                             <RowDefinition Height="*"/>
                                         </Grid.RowDefinitions>
-                                        <ContentControl Grid.Row="0">
+                                        <!--<ContentControl Grid.Row="0">
                                             <ContentControl.Template>
                                                 <ControlTemplate TargetType="{x:Type ContentControl}">
                                                     <ControlTemplate.Resources>
@@ -295,7 +295,7 @@
                                                     </Grid>
                                                 </ControlTemplate>
                                             </ContentControl.Template>
-                                        </ContentControl>
+                                        </ContentControl>-->
                                         <TextBlock Grid.Row="1" Text="{Binding LoadingText}" HorizontalAlignment="Center" FontSize="30"/>
                                     </Grid>
                                     <Grid SnapsToDevicePixels="true" Grid.Row="0" Grid.RowSpan="2" Background="{DynamicResource AllBg}" x:Name="NMsgControl" Visibility="{Binding MsgVisibility}" d:DataContext="{d:DesignInstance ui:NMsgViewModel}">

@@ -13,11 +13,11 @@ namespace NekoMacro.MacrosBase.NewCmd
     {
         public override CmdType CmdType => CmdType.Key;
 
-        public override ObservableCollectionWithMultiSelectedItem<BaseCmd> Childs
-        {
-            get => null;
-            set => _ = value;
-        }
+        //public override ObservableCollectionWithMultiSelectedItem<BaseCmd> Childs
+        //{
+        //    get => null;
+        //    set => _ = value;
+        //}
 
         public override string Text => $"{base.Text}{Action}";
 
