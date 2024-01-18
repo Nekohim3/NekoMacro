@@ -90,7 +90,7 @@
                     <Button Grid.Column="2" Content="Up" Width="50"/>
                     <Button Grid.Column="3" Content="Down" Width="50"/>-->
                 </Grid>
-                <DataGrid Grid.Row="1" ItemsSource="{Binding MacrosList.SelectedItem.Commands.FlatModel}" SelectionChanged="Selector_OnSelectionChanged">
+                <DataGrid Grid.Row="1" ItemsSource="{Binding CommandList}" SelectionChanged="Selector_OnSelectionChanged">
                     <DataGrid.Columns>
                         <DataGridTemplateColumn Header="Action" Width="*">
                             <DataGridTemplateColumn.CellTemplate>
@@ -202,7 +202,7 @@
                                 </Grid.RowDefinitions>
                                 <StackPanel Grid.Row="0" Grid.Column="0" Orientation="Vertical">
                                     <Button Content="Set repeat for selected commands" Margin="2,2,2,2" Command="{Binding SetRepeatForSelectedCmd}" Height="20" SnapsToDevicePixels="True" RenderOptions.EdgeMode="Aliased"  Visibility="{Binding RepeatSetVisible, Converter={StaticResource BoolToVisibilityConverter}}"/>
-                                    <Button Content="Escape selected commands from repeat" Margin="2,2,2,2" Command="{Binding EscapeRepeatCmd}" RenderOptions.EdgeMode="Aliased"/>
+                                    <Button Content="Escape selected commands from repeat" Margin="2,2,2,2" Command="{Binding EscapeRepeatCmd}" RenderOptions.EdgeMode="Aliased" Visibility="{Binding RepeatEscapeVisible, Converter={StaticResource BoolToVisibilityConverter}}"/>
                                 </StackPanel>
                                 <StackPanel Grid.Row="1" Grid.Column="0" Orientation="Vertical" Visibility="{Binding RepeatEditVisible, Converter={StaticResource BoolToVisibilityConverter}}">
                                     <Grid>
@@ -213,7 +213,6 @@
                                             <ColumnDefinition Width="Auto"/>
                                         </Grid.ColumnDefinitions>
                                         <TextBlock Grid.Column="0" Text="Count" Margin="2,2,0,2" VerticalAlignment="Center"/>
-                                        <Button Grid.Column="1" Content="Max" Width="50" Margin="3,2,0,2" Command="{Binding MaxRepeatCmd}"/>
                                         <utils:IntegerTextBox Grid.Column="2" Margin="3,2,0,2" Text="{Binding RepeatCount}"/>
                                         <Button Grid.Column="3" Content="Set" Width="50" Margin="3,2,2,2" Command="{Binding SetRepeatCmd}"/>
                                     </Grid>

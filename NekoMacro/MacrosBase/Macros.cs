@@ -27,8 +27,8 @@ namespace NekoMacro.MacrosBase
             set => this.RaiseAndSetIfChanged(ref _desc, value);
         }
 
-        private TreeGridModel _commands;
-        public TreeGridModel Commands
+        private ObservableCollectionWithMultiSelectedItem<BaseCmd> _commands;
+        public ObservableCollectionWithMultiSelectedItem<BaseCmd> Commands
         {
             get => _commands;
             set => this.RaiseAndSetIfChanged(ref _commands, value);
@@ -51,7 +51,7 @@ namespace NekoMacro.MacrosBase
 
         public Macros()
         {
-            Commands = new TreeGridModel() { };
+            Commands = new ObservableCollectionWithMultiSelectedItem<BaseCmd>() { };
         }
 
 

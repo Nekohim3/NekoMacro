@@ -8,89 +8,91 @@ using System.Threading.Tasks;
 
 namespace NekoMacro.Utils.TreeDataGrid
 {
-    public class TreeGridFlatModel : ObservableCollectionWithMultiSelectedItem<TreeGridElement>
-    {
-        private const string ModificationError = "The collection cannot be modified by the user.";
+    //public class TreeGridFlatModel : ObservableCollectionWithMultiSelectedItem<TreeGridElement>
+    //{
+    //    private const string ModificationError = "The collection cannot be modified by the user.";
 
-        private bool modification;
-        private HashSet<TreeGridElement> keys;
+    //    private bool modification;
+    //    private HashSet<TreeGridElement> keys;
 
-        public TreeGridFlatModel()
-        {
-            // Initialize the model
-            keys = new HashSet<TreeGridElement>();
-        }
+    //    public TreeGridFlatModel()
+    //    {
+    //        // Initialize the model
+    //        keys = new HashSet<TreeGridElement>();
+    //    }
 
-        internal bool ContainsKey(TreeGridElement item)
-        {
-            // Return a value indicating if the item is within the model
-            return keys.Contains(item);
-        }
+    //    internal bool ContainsKey(TreeGridElement item)
+    //    {
+    //        // Return a value indicating if the item is within the model
+    //        return keys.Contains(item);
+    //    }
 
-        internal void PrivateInsert(int index, TreeGridElement item)
-        {
-            // Set the modification flag
-            modification = true;
+    //    internal void PrivateInsert(int index, TreeGridElement item)
+    //    {
+    //        // Set the modification flag
+    //        modification = true;
 
-            // Add the item to the model
-            Insert(index, item);
+    //        // Add the item to the model
+    //        Insert(index, item);
 
-            // Add the item to the keys
-            keys.Add(item);
+    //        // Add the item to the keys
+    //        keys.Add(item);
 
-            // Clear the modification flag
-            modification = false;
-        }
+    //        // Clear the modification flag
+    //        modification = false;
 
-        internal void PrivateInsertRange(int index, IList<TreeGridElement> items)
-        {
-            // Set the modification flag
-            modification = true;
+    //        item.UpdateLevel();
+    //    }
 
-            // Iterate through all of the children within the items
-            foreach (TreeGridElement child in items)
-            {
-                // Add the child to the model
-                Insert(index++, child);
+    //    internal void PrivateInsertRange(int index, IList<TreeGridElement> items)
+    //    {
+    //        // Set the modification flag
+    //        modification = true;
 
-                // Add the child to the keys
-                keys.Add(child);
-            }
+    //        // Iterate through all of the children within the items
+    //        foreach (TreeGridElement child in items)
+    //        {
+    //            // Add the child to the model
+    //            Insert(index++, child);
 
-            // Clear the modification flag
-            modification = false;
-        }
+    //            // Add the child to the keys
+    //            keys.Add(child);
+    //        }
 
-        internal void PrivateRemoveRange(int index, int count)
-        {
-            // Set the modification flag
-            modification = true;
+    //        // Clear the modification flag
+    //        modification = false;
+    //    }
 
-            // Iterate through all of the items to remove from the model
-            for (int itemIndex = 0; itemIndex < count; itemIndex++)
-            {
-                // Remove the item from the keys
-                keys.Remove(Items[index]);
+    //    internal void PrivateRemoveRange(int index, int count)
+    //    {
+    //        // Set the modification flag
+    //        modification = true;
 
-                // Remove the item from the model
-                RemoveAt(index);
-            }
+    //        // Iterate through all of the items to remove from the model
+    //        for (int itemIndex = 0; itemIndex < count; itemIndex++)
+    //        {
+    //            // Remove the item from the keys
+    //            keys.Remove(Items[index]);
 
-            // Clear the modification flag
-            modification = false;
-        }
+    //            // Remove the item from the model
+    //            RemoveAt(index);
+    //        }
 
-        protected override void OnCollectionChanged(NotifyCollectionChangedEventArgs args)
-        {
-            // Is the modification flag set?
-            if (!modification)
-            {
-                // The collection is for internal use only
-                throw new InvalidOperationException(ModificationError);
-            }
+    //        // Clear the modification flag
+    //        modification = false;
+    //    }
 
-            // Call base method
-            base.OnCollectionChanged(args);
-        }
-    }
+    //    protected override void OnCollectionChanged(NotifyCollectionChangedEventArgs args)
+    //    {
+    //        // Is the modification flag set?
+    //        if (!modification)
+    //        {
+    //            // The collection is for internal use only
+    //            throw new InvalidOperationException(ModificationError);
+    //        }
+
+    //        // Call base method
+    //        base.OnCollectionChanged(args);
+    //    }
+    //}
 }

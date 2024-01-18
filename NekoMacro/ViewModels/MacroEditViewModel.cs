@@ -7,6 +7,7 @@ using System.Reactive;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using DynamicData;
 using Interceptor;
 using NekoMacro.MacrosBase;
 using NekoMacro.MacrosBase.NewCmd;
@@ -26,6 +27,13 @@ namespace NekoMacro.ViewModels
         {
             get => _macrosList;
             set => this.RaiseAndSetIfChanged(ref _macrosList, value);
+        }
+
+        private ObservableCollectionWithMultiSelectedItem<BaseCmd> _commandList;
+        public ObservableCollectionWithMultiSelectedItem<BaseCmd> CommandList
+        {
+            get => _commandList;
+            set => this.RaiseAndSetIfChanged(ref _commandList, value);
         }
 
         private bool _recordDelay;
@@ -96,6 +104,13 @@ namespace NekoMacro.ViewModels
         {
             get => _repeatSetVisible;
             set => this.RaiseAndSetIfChanged(ref _repeatSetVisible, value);
+        }
+
+        private bool _repeatEscapeVisible;
+        public bool RepeatEscapeVisible
+        {
+            get => _repeatEscapeVisible;
+            set => this.RaiseAndSetIfChanged(ref _repeatEscapeVisible, value);
         }
 
         private bool _repeatEditVisible;
@@ -175,51 +190,102 @@ namespace NekoMacro.ViewModels
 
         private void OnEscapeRepeat()
         {
+            //var parent      = MacrosList.SelectedItem.Commands.FlatModel.SelectedItems.First().Parent;
+            //var childs      = MacrosList.SelectedItem.Commands.FlatModel.SelectedItems.First().Childs;
+            //var sel         = MacrosList.SelectedItem.Commands.FlatModel.SelectedItems.First();
+            //var indNoParent = MacrosList.SelectedItem.Commands.IndexOf(MacrosList.SelectedItem.Commands.FlatModel.SelectedItems.First());
+            //var indParent   = 0;
+            //if (parent != null)
+            //{
+            //    indParent = parent.Childs.IndexOf(sel);
+            //    if (indParent < 0)
+            //        indParent = 0;
+            //}
 
+
+
+            //if (parent == null)
+            //{
+            //    MacrosList.SelectedItem.Commands.Remove(sel);
+            //}
+            //else
+            //{
+            //    parent.Childs.Remove(sel);
+            //}
+
+            //foreach (var x in childs)
+            //{
+            //    x.Parent = x.Parent.Parent;
+            //    x.UpdateLevel();
+            //}
+
+            //if (!sel.IsExpanded)
+            //{
+            //    if (parent == null)
+            //    {
+            //        foreach (var x in childs)
+            //        {
+            //            MacrosList.SelectedItem.Commands.Insert(indNoParent++, x);
+            //        }
+            //    }
+            //    else
+            //    {
+            //        foreach (var x in childs)
+            //        {
+            //            parent.Childs.Insert(indParent++, x);
+            //        }
+            //    }
+            //}
         }
 
         private void OnSetRepeatForSelected()
         {
-            var indFirst = MacrosList.SelectedItem.Commands.FlatModel.IndexOf(MacrosList.SelectedItem.Commands.FlatModel.SelectedItems.First());
-            var indLast = MacrosList.SelectedItem.Commands.FlatModel.IndexOf(MacrosList.SelectedItem.Commands.FlatModel.SelectedItems.Last());
-            if (indLast - indFirst + 1 != MacrosList.SelectedItem.Commands.FlatModel.SelectedItems.Count)
-                return;
-            var parent = MacrosList.SelectedItem.Commands.FlatModel.SelectedItems.First().Parent;
-            if (MacrosList.SelectedItem.Commands.FlatModel.SelectedItems.Any(_ => _.Parent != parent))
-                return;
-            var cmd = new RepeatCmd(100, 1);
-            if (parent == null)
-            {
-                MacrosList.SelectedItem.Commands.Insert(indFirst, cmd);
-            }
-            else
-            {
-                var ind = parent.Childs.IndexOf(MacrosList.SelectedItem.Commands.FlatModel.SelectedItems.First());
-                parent.Childs.Insert(ind, cmd);
-            }
+            //if (MacrosList.SelectedItem.Commands.FlatModel.IndexOf(MacrosList.SelectedItem.Commands.FlatModel.SelectedItems.Last()) -
+            //    MacrosList.SelectedItem.Commands.FlatModel.IndexOf(MacrosList.SelectedItem.Commands.FlatModel.SelectedItems.First()) + 1
+            //    !=
+            //    MacrosList.SelectedItem.Commands.FlatModel.SelectedItems.Count)
+            //    return;
 
+            //var parent      = MacrosList.SelectedItem.Commands.FlatModel.SelectedItems.First().Parent;
+            //if (MacrosList.SelectedItem.Commands.FlatModel.SelectedItems.Any(_ => _.Parent != parent))
+            //    return;
 
+            //var indNoParent = MacrosList.SelectedItem.Commands.IndexOf(MacrosList.SelectedItem.Commands.FlatModel.SelectedItems.First());
+            //var indParent = 0;
+            //var sel         = MacrosList.SelectedItem.Commands.FlatModel.SelectedItems.ToList();
+            //if (parent != null)
+            //{
+            //    indParent = parent.Childs.IndexOf(sel.First());
+            //    if (indParent < 0)
+            //        indParent = 0;
+            //}
 
-            foreach (var x in MacrosList.SelectedItem.Commands.FlatModel.SelectedItems)
-            {
-                cmd.Childs.Add(x);
-            }
+            //if (parent == null)
+            //    foreach (var x in MacrosList.SelectedItem.Commands.FlatModel.SelectedItems.ToList())
+            //        MacrosList.SelectedItem.Commands.Remove(x);
+            //else
+            //    foreach (var x in MacrosList.SelectedItem.Commands.FlatModel.SelectedItems.ToList())
+            //        parent.Childs.Remove(x);
+            
+            //var cmd = new RepeatCmd(100, 1) { IsExpanded = true };
+            //foreach (var x in sel)
+            //    cmd.Childs.Add(x); 
+            //if (parent == null)
+            //    MacrosList.SelectedItem.Commands.Insert(indNoParent, cmd);
+            //else
+            //    parent.Childs.Insert(indParent, cmd);
+            //RefreshTree();
+        }
 
-            if (parent == null)
-            {
-                foreach (var x in MacrosList.SelectedItem.Commands.FlatModel.SelectedItems.ToList())
-                {
-                    MacrosList.SelectedItem.Commands.Remove(x);
-                    MacrosList.SelectedItem.Commands.FlatModel.PrivateRemoveRange(indFirst, indLast - indFirst + 1);
-                }
-            }
-            else
-            {
-                foreach (var x in MacrosList.SelectedItem.Commands.FlatModel.SelectedItems.ToList())
-                {
-                    parent.Childs.Remove(x);
-                }
-            }
+        public void RefreshTree()
+        {
+            //var lst = MacrosList.SelectedItem.Commands.ToList();
+            //MacrosList.SelectedItem.Commands.Clear();
+            //foreach (var x in lst)
+            //{
+            //    MacrosList.SelectedItem.Commands.Add(x);
+            //}
+
         }
 
         private void OnSetRepeat()
@@ -441,6 +507,44 @@ namespace NekoMacro.ViewModels
 
                 //MacrosList.Add(macros);
                 //Save();
+            }
+            MacrosList.SelectionChanged += MacrosListOnSelectionChanged;
+        }
+
+        private void MacrosListOnSelectionChanged(ObservableCollectionWithSelectedItem<Macros> sender, Macros newselection, Macros oldselection)
+        {
+            if (newselection == null)
+                return;
+            CommandList = new ObservableCollectionWithMultiSelectedItem<BaseCmd>();
+            CommandList.AddRange(newselection.Commands);
+        }
+
+        private void ChangedIsExpanded(bool isExpanded, BaseCmd r)
+        {
+            if (CommandList.SelectedItems == null || CommandList.SelectedItems.Count != 1)
+                return;
+            var sel = CommandList.SelectedItems.First();
+            var ind = CommandList.IndexOf(sel);
+            sel.IsExpanded = isExpanded;
+            if (isExpanded) // развернуть 
+            {
+                foreach (var item in sel.Childs)
+                {
+                    ind++;
+                    CommandList.Insert(ind, item);
+                    foreach (var x in item.Childs)
+                    {
+                        x.IsExpanded = false;
+                    }
+                }
+            }
+            else // свернуть 
+            {
+                sel.Shrink();
+                var level = sel.LevelNumber;
+                ind++;
+                while (ind < ListRepairItem.Count && ListRepairItem[ind].LevelNumber > level)
+                    ListRepairItem.RemoveAt(ind);
             }
         }
     }
