@@ -70,11 +70,11 @@ namespace NekoMacro.MacrosBase
             get => _isExpanded;
             set
             {
-                if (this.RaiseAndSetIfChanged(ref _isExpanded, value))
+                if (value != _isExpanded)
                 {
-
+                    this.RaiseAndSetIfChanged(ref _isExpanded, value);
+                    ChangedIsExpanded(value);
                 }
-
             }
         }
         private void ChangedIsExpanded(bool isExpanded)
@@ -88,7 +88,7 @@ namespace NekoMacro.MacrosBase
             foreach (var item in Childs)
                 item.Shrink();
         }
-        private             ObservableCollectionWithMultiSelectedItem<BaseCmd> _childs;
+        private             ObservableCollectionWithMultiSelectedItem<BaseCmd> _childs = new ObservableCollectionWithMultiSelectedItem<BaseCmd>();
         public virtual ObservableCollectionWithMultiSelectedItem<BaseCmd> Childs
         {
             get => _childs;

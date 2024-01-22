@@ -33,18 +33,18 @@ namespace NekoMacro.Views
         private void Selector_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             var vm = DataContext as MacroEditViewModel;
-            vm.MacrosList.SelectedItem.Commands.RemoveSelected(e.RemovedItems.Cast<BaseCmd>());
-            vm.MacrosList.SelectedItem.Commands.AddSelected(e.AddedItems.Cast<BaseCmd>());
-            if (vm.MacrosList.SelectedItem.Commands.SelectedItems.Count == 0)
+            vm.CommandList.RemoveSelected(e.RemovedItems.Cast<BaseCmd>());
+            vm.CommandList.AddSelected(e.AddedItems.Cast<BaseCmd>());
+            if (vm.CommandList.SelectedItems.Count == 0)
             {
                 vm.RepeatVisible       = false;
                 vm.RepeatEditVisible   = false;
                 vm.RepeatSetVisible    = false;
                 vm.RepeatEscapeVisible = false;
             }
-            if (vm.MacrosList.SelectedItem.Commands.SelectedItems.Count == 1)
+            if (vm.CommandList.SelectedItems.Count == 1)
             {
-                if (vm.MacrosList.SelectedItem.Commands.SelectedItems.First() is RepeatCmd)
+                if (vm.CommandList.SelectedItems.First() is RepeatCmd)
                 {
                     vm.RepeatVisible       = true;
                     vm.RepeatEditVisible   = true;
@@ -59,10 +59,10 @@ namespace NekoMacro.Views
                     vm.RepeatSetVisible    = true;
                 }
             }
-            else if (vm.MacrosList.SelectedItem.Commands.SelectedItems.Count > 0)
+            else if (vm.CommandList.SelectedItems.Count > 0)
             {
-                var lvl = vm.MacrosList.SelectedItem.Commands.SelectedItems.First().Level;
-                if (vm.MacrosList.SelectedItem.Commands.SelectedItems.Any(_ => _.Level != lvl))
+                var lvl = vm.CommandList.SelectedItems.First().Level;
+                if (vm.CommandList.SelectedItems.Any(_ => _.Level != lvl))
                 {
                     vm.RepeatVisible       = false;
                     vm.RepeatEditVisible   = false;

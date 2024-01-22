@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -190,102 +191,104 @@ namespace NekoMacro.ViewModels
 
         private void OnEscapeRepeat()
         {
-            //var parent      = MacrosList.SelectedItem.Commands.FlatModel.SelectedItems.First().Parent;
-            //var childs      = MacrosList.SelectedItem.Commands.FlatModel.SelectedItems.First().Childs;
-            //var sel         = MacrosList.SelectedItem.Commands.FlatModel.SelectedItems.First();
-            //var indNoParent = MacrosList.SelectedItem.Commands.IndexOf(MacrosList.SelectedItem.Commands.FlatModel.SelectedItems.First());
-            //var indParent   = 0;
-            //if (parent != null)
-            //{
-            //    indParent = parent.Childs.IndexOf(sel);
-            //    if (indParent < 0)
-            //        indParent = 0;
-            //}
+            var parent = CommandList.SelectedItems.First().Parent;
 
+            if (parent == null)
+            {
+                var ind = MacrosList.SelectedItem.Commands.IndexOf(CommandList.SelectedItems.First());
+                foreach (var x in CommandList.SelectedItems.First().Childs)
+                {
+                    MacrosList.SelectedItem.Commands.Insert(ind++, x);
+                    x.Parent = null;
+                }
 
+                MacrosList.SelectedItem.Commands.Remove(CommandList.SelectedItems.First());
+            }
+            else
+            {
+                var ind = parent.Childs.IndexOf(CommandList.SelectedItems.First());
+                foreach (var x in CommandList.SelectedItems.First().Childs)
+                {
+                    parent.Childs.Insert(ind++, x);
+                    x.Parent = parent.Parent;
+                }
 
-            //if (parent == null)
-            //{
-            //    MacrosList.SelectedItem.Commands.Remove(sel);
-            //}
-            //else
-            //{
-            //    parent.Childs.Remove(sel);
-            //}
-
-            //foreach (var x in childs)
-            //{
-            //    x.Parent = x.Parent.Parent;
-            //    x.UpdateLevel();
-            //}
-
-            //if (!sel.IsExpanded)
-            //{
-            //    if (parent == null)
-            //    {
-            //        foreach (var x in childs)
-            //        {
-            //            MacrosList.SelectedItem.Commands.Insert(indNoParent++, x);
-            //        }
-            //    }
-            //    else
-            //    {
-            //        foreach (var x in childs)
-            //        {
-            //            parent.Childs.Insert(indParent++, x);
-            //        }
-            //    }
-            //}
+                parent.Childs.Remove(CommandList.SelectedItems.First());
+            }
+            
+            RefreshTree();
         }
 
         private void OnSetRepeatForSelected()
         {
-            //if (MacrosList.SelectedItem.Commands.FlatModel.IndexOf(MacrosList.SelectedItem.Commands.FlatModel.SelectedItems.Last()) -
-            //    MacrosList.SelectedItem.Commands.FlatModel.IndexOf(MacrosList.SelectedItem.Commands.FlatModel.SelectedItems.First()) + 1
-            //    !=
-            //    MacrosList.SelectedItem.Commands.FlatModel.SelectedItems.Count)
-            //    return;
+            if (CommandList.IndexOf(CommandList.SelectedItems.Last()) - CommandList.IndexOf(CommandList.SelectedItems.First()) + 1 != CommandList.SelectedItems.Count)
+                return;
 
-            //var parent      = MacrosList.SelectedItem.Commands.FlatModel.SelectedItems.First().Parent;
-            //if (MacrosList.SelectedItem.Commands.FlatModel.SelectedItems.Any(_ => _.Parent != parent))
-            //    return;
+            var parent = CommandList.SelectedItems.First().Parent;
 
-            //var indNoParent = MacrosList.SelectedItem.Commands.IndexOf(MacrosList.SelectedItem.Commands.FlatModel.SelectedItems.First());
-            //var indParent = 0;
-            //var sel         = MacrosList.SelectedItem.Commands.FlatModel.SelectedItems.ToList();
-            //if (parent != null)
-            //{
-            //    indParent = parent.Childs.IndexOf(sel.First());
-            //    if (indParent < 0)
-            //        indParent = 0;
-            //}
+            if (CommandList.SelectedItems.Any(_ => _.Parent != parent))
+                return;
 
-            //if (parent == null)
-            //    foreach (var x in MacrosList.SelectedItem.Commands.FlatModel.SelectedItems.ToList())
-            //        MacrosList.SelectedItem.Commands.Remove(x);
-            //else
-            //    foreach (var x in MacrosList.SelectedItem.Commands.FlatModel.SelectedItems.ToList())
-            //        parent.Childs.Remove(x);
-            
-            //var cmd = new RepeatCmd(100, 1) { IsExpanded = true };
-            //foreach (var x in sel)
-            //    cmd.Childs.Add(x); 
-            //if (parent == null)
-            //    MacrosList.SelectedItem.Commands.Insert(indNoParent, cmd);
-            //else
-            //    parent.Childs.Insert(indParent, cmd);
-            //RefreshTree();
+            var sel = CommandList.SelectedItems.ToList();
+            if (parent == null)
+            {
+                var ind = MacrosList.SelectedItem.Commands.IndexOf(sel.First());
+                foreach (var x in sel)
+                    MacrosList.SelectedItem.Commands.Remove(x);
+
+                var cmd = new RepeatCmd(100, 1) { IsExpanded = true };
+                foreach (var x in sel)
+                    cmd.AddChild(x);
+                MacrosList.SelectedItem.Commands.Insert(ind, cmd);
+            }
+            else
+            {
+                var ind = parent.Childs.IndexOf(sel.First());
+                foreach (var x in sel)
+                {
+                    parent.Childs.Remove(x);
+                }
+
+                var cmd = new RepeatCmd(100, 1) { IsExpanded = true };
+                foreach (var x in sel)
+                    cmd.AddChild(x);
+                parent.Childs.Insert(ind, cmd);
+                cmd.Parent = parent;
+
+            }
+            RefreshTree();
         }
 
         public void RefreshTree()
         {
-            //var lst = MacrosList.SelectedItem.Commands.ToList();
-            //MacrosList.SelectedItem.Commands.Clear();
-            //foreach (var x in lst)
-            //{
-            //    MacrosList.SelectedItem.Commands.Add(x);
-            //}
+            CommandList.SelectionChanged -= CommandListOnSelectionChanged;
+            CommandList = new ObservableCollectionWithMultiSelectedItem<BaseCmd>();
+            CommandList.AddRange(MacrosList.SelectedItem.Commands);
+            CommandList.SelectionChanged += CommandListOnSelectionChanged;
+            foreach (var x in CommandList)
+            {
+                SetParent(x);
+            }
 
+            foreach (var x in MacrosList.SelectedItem.Commands)
+            {
+                Expand(x);
+            }
+        }
+
+        public void Expand(BaseCmd cmd)
+        {
+            if (cmd.IsExpanded)
+            {
+                CommandList.SelectedItems = new ObservableCollection<BaseCmd>() {cmd};
+                ChangedIsExpanded(true, cmd);
+                CommandList.SelectedItems = new ObservableCollection<BaseCmd>();
+            }
+
+            foreach (var x in cmd.Childs)
+            {
+                Expand(x);
+            }
         }
 
         private void OnSetRepeat()
@@ -467,56 +470,84 @@ namespace NekoMacro.ViewModels
                                                                                                                                              });
             else
             {
-                //MacrosList = new ObservableCollectionWithSelectedItem<Macros>();
-                //var macros = new Macros("Test1");
-                //macros.AddCommand(new KeyCmd(Keys.Q, 100, 50));
+                MacrosList = new ObservableCollectionWithSelectedItem<Macros>();
+                var macros = new Macros("Test1");
+                macros.AddCommand(new KeyCmd(Keys.Q, 100, 50));
 
-                //macros.AddCommand(new KeyCmd(Keys.W, 100, 50, ctrl: true));
-                //macros.AddCommand(new KeyCmd(Keys.E, 100, 50, alt: true));
-                //macros.AddCommand(new KeyCmd(Keys.R, 100, 50, shift: true));
-                //macros.AddCommand(new KeyCmd(Keys.T, 100, 50, ctrl: true, alt: true));
-                //macros.AddCommand(new KeyCmd(Keys.Y, 100, 50, ctrl: true, shift: true));
-                //macros.AddCommand(new KeyCmd(Keys.U, 100, 50, alt: true, shift: true));
-                //macros.AddCommand(new KeyCmd(Keys.I, 100, 50, ctrl: true, alt: true, shift: true));
-                //var rcmd = new RepeatCmd(100, 50);
-                //rcmd.Childs.Add(new MouseCmd(MouseKey.Left, 100, 50));
-                //rcmd.Childs.Add(new MouseCmd(MouseKey.Left, 100, 50));
-                //rcmd.Childs.Add(new KeyCmd(Keys.W, 100, 50, ctrl: true));
-                //rcmd.Childs.Add(new KeyCmd(Keys.E, 100, 50, alt: true));
-                //rcmd.Childs.Add(new KeyCmd(Keys.R, 100, 50, shift: true));
-                //rcmd.Childs.Add(new KeyCmd(Keys.T, 100, 50, ctrl: true, alt: true));
-                //rcmd.Childs.Add(new KeyCmd(Keys.Y, 100, 50, ctrl: true, shift: true));
-                //rcmd.Childs.Add(new KeyCmd(Keys.U, 100, 50, alt: true, shift: true));
-                //rcmd.Childs.Add(new KeyCmd(Keys.I, 100, 50, ctrl: true, alt: true, shift: true));
-                //macros.AddCommand(rcmd);
-                //macros.AddCommand(new MouseCmd(MouseKey.Left, 100, 50));
-                //macros.AddCommand(new MouseCmd(MouseKey.Right, 100, 50));
-                //macros.AddCommand(new MouseCmd(MouseKey.Middle, 100, 50));
-                //macros.AddCommand(new MouseCmd(MouseKey.X1, 100, 50));
-                //macros.AddCommand(new MouseCmd(MouseKey.X2, 100, 50));
-                //macros.AddCommand(new MouseCmd(MouseKey.Left, 100, 50, ctrl: true));
-                //macros.AddCommand(new MouseCmd(MouseKey.Left, 100, 50, alt: true));
-                //macros.AddCommand(new MouseCmd(MouseKey.Left, 100, 50, shift: true));
-                //macros.AddCommand(new MouseCmd(MouseKey.Left, 100, 50, ctrl: true, alt: true));
-                //macros.AddCommand(new MouseCmd(MouseKey.Left, 100, 50, ctrl: true, shift: true));
-                //macros.AddCommand(new MouseCmd(MouseKey.Left, 100, 50, alt: true, shift: true));
-                //macros.AddCommand(new MouseCmd(MouseKey.Left, 100, 50, ctrl: true, alt: true, shift: true));
-                //macros.AddCommand(new MouseCmd(MouseKey.Moving, new GetMousePos.POINT(100, 150), 300));
-                //macros.AddCommand(new MouseCmd(MouseKey.Moving, new GetMousePos.POINT(1000, 1500), 300));
-                //macros.AddCommand(new MouseCmd(MouseKey.Moving, new GetMousePos.POINT(1500, 150), 300));
+                macros.AddCommand(new KeyCmd(Keys.W, 100, 50, ctrl: true));
+                macros.AddCommand(new KeyCmd(Keys.E, 100, 50, alt: true));
+                macros.AddCommand(new KeyCmd(Keys.R, 100, 50, shift: true));
+                macros.AddCommand(new KeyCmd(Keys.T, 100, 50, ctrl: true, alt: true));
+                macros.AddCommand(new KeyCmd(Keys.Y, 100, 50, ctrl: true, shift: true));
+                macros.AddCommand(new KeyCmd(Keys.U, 100, 50, alt: true, shift: true));
+                macros.AddCommand(new KeyCmd(Keys.I, 100, 50, ctrl: true, alt: true, shift: true));
+                var rcmd = new RepeatCmd(100, 50);
+                rcmd.AddChild(new MouseCmd(MouseKey.Left, 100, 50));
+                rcmd.AddChild(new MouseCmd(MouseKey.Left, 100, 50));
+                rcmd.AddChild(new KeyCmd(Keys.W, 100, 50, ctrl: true));
+                rcmd.AddChild(new KeyCmd(Keys.E, 100, 50, alt: true));
+                rcmd.AddChild(new KeyCmd(Keys.R, 100, 50, shift: true));
+                rcmd.AddChild(new KeyCmd(Keys.T, 100, 50, ctrl: true, alt: true));
+                rcmd.AddChild(new KeyCmd(Keys.Y, 100, 50, ctrl: true, shift: true));
+                rcmd.AddChild(new KeyCmd(Keys.U, 100, 50, alt: true, shift: true));
+                rcmd.AddChild(new KeyCmd(Keys.I, 100, 50, ctrl: true, alt: true, shift: true));
+                macros.AddCommand(rcmd);
+                macros.AddCommand(new MouseCmd(MouseKey.Left, 100, 50));
+                macros.AddCommand(new MouseCmd(MouseKey.Right, 100, 50));
+                macros.AddCommand(new MouseCmd(MouseKey.Middle, 100, 50));
+                macros.AddCommand(new MouseCmd(MouseKey.X1, 100, 50));
+                macros.AddCommand(new MouseCmd(MouseKey.X2, 100, 50));
+                macros.AddCommand(new MouseCmd(MouseKey.Left, 100, 50, ctrl: true));
+                macros.AddCommand(new MouseCmd(MouseKey.Left, 100, 50, alt: true));
+                macros.AddCommand(new MouseCmd(MouseKey.Left, 100, 50, shift: true));
+                macros.AddCommand(new MouseCmd(MouseKey.Left, 100, 50, ctrl: true, alt: true));
+                macros.AddCommand(new MouseCmd(MouseKey.Left, 100, 50, ctrl: true, shift: true));
+                macros.AddCommand(new MouseCmd(MouseKey.Left, 100, 50, alt: true, shift: true));
+                macros.AddCommand(new MouseCmd(MouseKey.Left, 100, 50, ctrl: true, alt: true, shift: true));
+                macros.AddCommand(new MouseCmd(MouseKey.Moving, new GetMousePos.POINT(100, 150), 300));
+                macros.AddCommand(new MouseCmd(MouseKey.Moving, new GetMousePos.POINT(1000, 1500), 300));
+                macros.AddCommand(new MouseCmd(MouseKey.Moving, new GetMousePos.POINT(1500, 150), 300));
 
-                //MacrosList.Add(macros);
-                //Save();
+                MacrosList.Add(macros);
+                Save();
             }
             MacrosList.SelectionChanged += MacrosListOnSelectionChanged;
         }
 
+        private void SetParent(BaseCmd parent)
+        {
+            foreach (var x in parent.Childs)
+            {
+                x.Parent = parent;
+                SetParent(x);
+            }
+        }
+
+        
+
         private void MacrosListOnSelectionChanged(ObservableCollectionWithSelectedItem<Macros> sender, Macros newselection, Macros oldselection)
         {
+            if(oldselection != null && CommandList != null)
+                CommandList.SelectionChanged -= CommandListOnSelectionChanged;
             if (newselection == null)
                 return;
             CommandList = new ObservableCollectionWithMultiSelectedItem<BaseCmd>();
             CommandList.AddRange(newselection.Commands);
+            CommandList.SelectionChanged += CommandListOnSelectionChanged;
+            foreach (var x in CommandList)
+            {
+                SetParent(x);
+            }
+        }
+
+        private void CommandListOnSelectionChanged(ObservableCollectionWithMultiSelectedItem<BaseCmd> sender, IList<BaseCmd> addeditems, IList<BaseCmd> removeditems)
+        {
+            if(removeditems != null)
+                foreach (var x in removeditems)
+                    x.OnChangedIsExpanded -= ChangedIsExpanded;
+            if(addeditems != null)
+                foreach (var x in addeditems)
+                    x.OnChangedIsExpanded += ChangedIsExpanded;
         }
 
         private void ChangedIsExpanded(bool isExpanded, BaseCmd r)
@@ -525,26 +556,21 @@ namespace NekoMacro.ViewModels
                 return;
             var sel = CommandList.SelectedItems.First();
             var ind = CommandList.IndexOf(sel);
-            sel.IsExpanded = isExpanded;
             if (isExpanded) // развернуть 
             {
                 foreach (var item in sel.Childs)
                 {
                     ind++;
                     CommandList.Insert(ind, item);
-                    foreach (var x in item.Childs)
-                    {
-                        x.IsExpanded = false;
-                    }
                 }
             }
             else // свернуть 
             {
                 sel.Shrink();
-                var level = sel.LevelNumber;
+                var level = sel.Level;
                 ind++;
-                while (ind < ListRepairItem.Count && ListRepairItem[ind].LevelNumber > level)
-                    ListRepairItem.RemoveAt(ind);
+                while (ind < CommandList.Count && CommandList[ind].Level > level)
+                    CommandList.RemoveAt(ind);
             }
         }
     }
