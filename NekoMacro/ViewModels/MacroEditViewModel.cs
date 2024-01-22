@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reactive;
+using System.Reactive.PlatformServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -23,6 +24,8 @@ namespace NekoMacro.ViewModels
 {
     public class MacroEditViewModel : ReactiveObject
     {
+        #region Properties
+        
         private ObservableCollectionWithSelectedItem<Macros> _macrosList;
         public ObservableCollectionWithSelectedItem<Macros> MacrosList
         {
@@ -44,21 +47,21 @@ namespace NekoMacro.ViewModels
             set => this.RaiseAndSetIfChanged(ref _recordDelay, value);
         }
 
-        private bool _staticDelay;
+        private bool _staticDelay = true;
         public bool StaticDelay
         {
             get => _staticDelay;
             set => this.RaiseAndSetIfChanged(ref _staticDelay, value);
         }
 
-        private int _clickDelay;
+        private int _clickDelay = 50;
         public int ClickDelay
         {
             get => _clickDelay;
             set => this.RaiseAndSetIfChanged(ref _clickDelay, value);
         }
 
-        private int _betweenDelay;
+        private int _betweenDelay = 100;
         public int BetweenDelay
         {
             get => _betweenDelay;
@@ -135,7 +138,7 @@ namespace NekoMacro.ViewModels
             set => this.RaiseAndSetIfChanged(ref _insertBeforeSelected, value);
         }
 
-        private bool _insertAfterSelected;
+        private bool _insertAfterSelected = true;
         public bool InsertAfterSelected
         {
             get => _insertAfterSelected;
@@ -148,7 +151,9 @@ namespace NekoMacro.ViewModels
             get => _recordCoordOnClick;
             set => this.RaiseAndSetIfChanged(ref _recordCoordOnClick, value);
         }
-        
+
+        #endregion
+
         public ReactiveCommand<Unit, Unit> AddMacrosCmd                  { get; }
         public ReactiveCommand<Unit, Unit> EditMacrosCmd                 { get; }
         public ReactiveCommand<Unit, Unit> SaveMacrosCmd                 { get; }
@@ -217,6 +222,7 @@ namespace NekoMacro.ViewModels
             }
             
             RefreshTree();
+            Save();
         }
 
         private void OnSetRepeatForSelected()
@@ -257,6 +263,7 @@ namespace NekoMacro.ViewModels
 
             }
             RefreshTree();
+            Save();
         }
 
         public void RefreshTree()
@@ -293,7 +300,8 @@ namespace NekoMacro.ViewModels
 
         private void OnSetRepeat()
         {
-
+            CommandList.SelectedItems.First().ClickDelay = RepeatCount;
+            Save();
         }
 
         private void OnMaxRepeat()
@@ -360,7 +368,13 @@ namespace NekoMacro.ViewModels
 
         private void OnDeleteCommand()
         {
-
+            //if (CommandList.SelectedItems == null || CommandList.SelectedItems.Count == 0)
+            //    return;
+            //var level = CommandList.SelectedItems.First().Level;
+            //if (CommandList.SelectedItems.Any(_ => _.Level != level))
+            //    return;
+            //foreach (var x in CommandList.SelectedItems.ToList())
+            //    CommandList.Remove(x);
         }
 
         private void MousePressHandler(object sender, MousePressedEventArgs e)
@@ -373,7 +387,53 @@ namespace NekoMacro.ViewModels
 
         private void KeyPressHandler(object sender, KeyPressedEventArgs e)
         {
-            
+            if (!IsRecord)
+                return;
+
+            if(e.State.HasFlag(KeyState.E0) || e.State.HasFlag(KeyState.E1))
+                return;
+
+            if (e.Key == Keys.Control)
+            {
+                GlobalDriver.Ctrl = e.State == KeyState.Down;
+                return;
+            }
+
+            if (e.Key == Keys.RightAlt)
+            {
+                GlobalDriver.Ctrl = e.State == KeyState.Down;
+                return;
+            }
+
+            if (e.Key == Keys.LeftShift || e.Key == Keys.RightShift)
+            {
+                GlobalDriver.Ctrl = e.State == KeyState.Down;
+                return;
+            }
+
+            var cmd    = new KeyCmd(e.Key, BetweenDelay, ClickDelay, GlobalDriver.Ctrl, GlobalDriver.Shift, GlobalDriver.Alt);
+            var parent = CommandList.SelectedItems.First().Parent;
+            if (parent == null)
+            {
+                var ind   = MacrosList.SelectedItem.Commands.IndexOf(CommandList.SelectedItems.First());
+                var indcl = CommandList.SelectedItems.IndexOf(CommandList.SelectedItems.First());
+                if (InsertAfterSelected)
+                {
+                    MacrosList.SelectedItem.Commands.Insert(ind + 1, cmd);
+                    CommandList.Insert(indcl                    + 1, cmd);
+                    CommandList.SelectedItems = new ObservableCollection<BaseCmd>() { CommandList.SelectedItems[indcl + 1] };
+                }
+                else
+                {
+
+                }
+            }
+            else
+            {
+
+            }
+
+            Save();
         }
 
         private void OnAddMacros()
@@ -433,14 +493,24 @@ namespace NekoMacro.ViewModels
             //selected
         }
 
-        private void OnSetBetweenDelayForSelected()
-        {
-
-        }
-        
         private void OnSetClickDelayForSelected()
         {
+            if (CommandList.SelectedItems != null)
+            {
+                foreach (var x in CommandList.SelectedItems)
+                    x.ClickDelay = ClickDelay;
+                Save();
+            }
+        }
 
+        private void OnSetBetweenDelayForSelected()
+        {
+            if (CommandList.SelectedItems != null)
+            {
+                foreach (var x in CommandList.SelectedItems)
+                    x.Delay = BetweenDelay;
+                Save();
+            }
         }
 
         private void Save()
@@ -545,9 +615,15 @@ namespace NekoMacro.ViewModels
             if(removeditems != null)
                 foreach (var x in removeditems)
                     x.OnChangedIsExpanded -= ChangedIsExpanded;
-            if(addeditems != null)
+            if (addeditems != null)
+            {
                 foreach (var x in addeditems)
                     x.OnChangedIsExpanded += ChangedIsExpanded;
+                if (CommandList.SelectedItems.Count == 1)
+                {
+                    RepeatCount = CommandList.SelectedItems.First().ClickDelay;
+                }
+            }
         }
 
         private void ChangedIsExpanded(bool isExpanded, BaseCmd r)

@@ -1,10 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using NekoMacro.Utils;
-using NekoMacro.Utils.TreeDataGrid;
 using Newtonsoft.Json;
 using ReactiveUI;
 
@@ -52,7 +47,11 @@ namespace NekoMacro.MacrosBase
         public int ClickDelay
         {
             get => _clickDelay;
-            set => this.RaiseAndSetIfChanged(ref _clickDelay, value);
+            set
+            {
+                this.RaiseAndSetIfChanged(ref _clickDelay, value);
+                this.RaisePropertyChanged("Text");
+            }
         }
 
         private BaseCmd _parent;
@@ -62,10 +61,9 @@ namespace NekoMacro.MacrosBase
             set => this.RaiseAndSetIfChanged(ref _parent, value);
         }
 
-        [JsonIgnore] public int  Level     => Parent?.Level + 1 ?? 0;
-        [JsonIgnore] public bool HasChilds => Childs?.Count > 0;
-        private             bool    _isExpanded;
-        [JsonIgnore]public bool IsExpanded
+        private bool _isExpanded;
+        [JsonIgnore]
+        public bool IsExpanded
         {
             get => _isExpanded;
             set
@@ -77,18 +75,13 @@ namespace NekoMacro.MacrosBase
                 }
             }
         }
-        private void ChangedIsExpanded(bool isExpanded)
-        {
-            OnChangedIsExpanded?.Invoke(isExpanded, this);
-        }
-        public Action<bool, BaseCmd> OnChangedIsExpanded { get; set; }
-        public void Shrink()
-        {
-            IsExpanded = false;
-            foreach (var item in Childs)
-                item.Shrink();
-        }
-        private             ObservableCollectionWithMultiSelectedItem<BaseCmd> _childs = new ObservableCollectionWithMultiSelectedItem<BaseCmd>();
+
+        [JsonIgnore] public int  Level     => Parent?.Level + 1 ?? 0;
+        [JsonIgnore] public bool HasChilds => Childs?.Count > 0;
+        
+        [JsonIgnore]public Action<bool, BaseCmd> OnChangedIsExpanded { get; set; }
+        
+        private ObservableCollectionWithMultiSelectedItem<BaseCmd> _childs = new ObservableCollectionWithMultiSelectedItem<BaseCmd>();
         public virtual ObservableCollectionWithMultiSelectedItem<BaseCmd> Childs
         {
             get => _childs;
@@ -123,5 +116,17 @@ namespace NekoMacro.MacrosBase
         [JsonIgnore] public abstract CmdType CmdType { get; }
 
         public abstract void Execute();
+
+        private void ChangedIsExpanded(bool isExpanded)
+        {
+            OnChangedIsExpanded?.Invoke(isExpanded, this);
+        }
+
+        public void Shrink()
+        {
+            IsExpanded = false;
+            foreach (var item in Childs)
+                item.Shrink();
+        }
     }
 }

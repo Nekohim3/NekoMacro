@@ -24,7 +24,7 @@ namespace NekoMacro
                                 EventHandler<KeyPressedEventArgs>   keyPressHandler   = null,
                                 EventHandler<MousePressedEventArgs> mousePressHandler = null)
         {
-            return;
+            //return;
             if (_driver != null && _driver.IsLoaded)
                 return;
             _driver = new Input
