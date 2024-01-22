@@ -27,6 +27,8 @@ namespace NekoMacro.ViewModels
     {
         private Thread                                       _mThread;
         private bool                                         _work;
+        private Thread                                       _mThread1;
+        private bool                                         _work1;
         private ObservableCollectionWithSelectedItem<Macros> _macrosList;
         public ObservableCollectionWithSelectedItem<Macros> MacrosList
         {
@@ -305,6 +307,16 @@ namespace NekoMacro.ViewModels
                 OnStopMacro();
             }
 
+            if (e.KeyCode == System.Windows.Forms.Keys.F2)
+            {
+                OnStartMacro1();
+            }
+
+            if (e.KeyCode == System.Windows.Forms.Keys.F3)
+            {
+                OnStopMacro1();
+            }
+
         }
         
         private void MacrosListOnCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
@@ -339,7 +351,7 @@ namespace NekoMacro.ViewModels
             }
             else if (newselection is MouseCommand mcmd)
             {
-                CurrentCommand = new MouseCommand(mcmd.Button, mcmd.Dir, mcmd.X, mcmd.Y, mcmd.Abs);
+                CurrentCommand = new MouseCommand(mcmd.Button, mcmd.Dir, mcmd.X, mcmd.Y, mcmd.X1, mcmd.Y1, mcmd.Abs);
                 SelectedType   = CommandType.Mouse;
                 SelectedMouseButton = mcmd.Button;
                 SelectedMouseDir = mcmd.Dir;
@@ -491,6 +503,102 @@ namespace NekoMacro.ViewModels
             _work = false;
         }
 
+        private void OnStartMacro1()
+        {
+            if (_work1)
+                return;
+            _work1    = true;
+            _mThread1 = new Thread(MacroThread1);
+            _mThread1.Start();
+        }
+
+        private void OnStopMacro1()
+        {
+            if (!_work1)
+                return;
+            _work1 = false;
+        }
+
+        private void Move(int fx, int fy, int tx, int ty)
+        {
+            var x = fx;
+            var y = fy;
+            while (x != tx || y != ty)
+            {
+                if(x != tx)
+                    x += (tx - fx) > 0 ? 10 : -10;
+                if (y != ty)
+                    y += (ty - fy) > 0 ? 10 : -10;
+                GlobalDriver._driver.MoveMouseTo(x * (65535 / 1920), y * (65535 / 1080));
+                Thread.Sleep(5);
+            }
+            //for(int i = 0; i < ms; i++)
+            //{
+            //    GlobalDriver._driver.MoveMouseTo(x * (65535 / 1920), y * (65535 / 1080));
+            //    Thread.Sleep(1);
+            //}
+        }
+
+        private void MacroThread1()
+        {
+            while (_work1)
+            {
+                var lst = new List<Command>();
+                lst.Add(new MouseCommand(MouseButton.Moving, MouseDir.None, 700, 350, 800, 220));
+                lst.Add(new DelayCommand(50));
+                lst.Add(new MouseCommand(MouseButton.Left, MouseDir.Down));
+                lst.Add(new DelayCommand(80));
+                lst.Add(new MouseCommand(MouseButton.Left, MouseDir.Up));
+                lst.Add(new DelayCommand(25));
+                lst.Add(new MouseCommand(MouseButton.Moving, MouseDir.None, 730, 220, 700, 350));
+                lst.Add(new DelayCommand(50));
+                lst.Add(new MouseCommand(MouseButton.Left, MouseDir.Down));
+                lst.Add(new DelayCommand(80));
+                lst.Add(new MouseCommand(MouseButton.Left, MouseDir.Up));
+                lst.Add(new DelayCommand(25));
+                lst.Add(new MouseCommand(MouseButton.Moving, MouseDir.None, 760, 220, 730, 220));
+                lst.Add(new DelayCommand(50));
+                lst.Add(new MouseCommand(MouseButton.Left, MouseDir.Down));
+                lst.Add(new DelayCommand(80));
+                lst.Add(new MouseCommand(MouseButton.Left, MouseDir.Up));
+                lst.Add(new DelayCommand(25));
+                lst.Add(new MouseCommand(MouseButton.Moving, MouseDir.None, 800, 220, 760, 220));
+                lst.Add(new DelayCommand(50));
+                lst.Add(new MouseCommand(MouseButton.Left, MouseDir.Down));
+                lst.Add(new DelayCommand(80));
+                lst.Add(new MouseCommand(MouseButton.Left, MouseDir.Up));
+                lst.Add(new DelayCommand(50));
+                foreach (var x in lst)
+                {
+                    if (x is KeyCommand kcmd)
+                    {
+                        GlobalDriver._driver.SendKey(kcmd.Key, kcmd.State, false);
+                        if (kcmd.State == KeyState.Up && !_work1)
+                            break;
+                    }
+                    else if (x is MouseCommand mcmd)
+                    {
+                        if (mcmd.Button == MouseButton.Moving)
+                        {
+                            Move(mcmd.X1, mcmd.Y1, mcmd.X, mcmd.Y);
+                            //GlobalDriver._driver.MoveMouseTo(mcmd.X * (65535/1920), mcmd.Y*(65535/1080));
+                        }
+                        else
+                        {
+                            GlobalDriver._driver.SendMouseEvent(mcmd.Button, mcmd.Dir);
+                        }
+                        if (mcmd.Dir == MouseDir.Up && !_work1)
+                            break;
+                    }
+                    else if (x is DelayCommand dcmd)
+                    {
+                        Thread.Sleep(dcmd.Delay);
+                    }
+
+                }
+            }
+        }
+
         private void MacroThread()
         {
             while (_work)
@@ -500,13 +608,13 @@ namespace NekoMacro.ViewModels
                     if (x is KeyCommand kcmd)
                     {
                         GlobalDriver._driver.SendKey(kcmd.Key, kcmd.State, false);
-                        if(kcmd.State == KeyState.Up && ! _work)
+                        if (kcmd.State == KeyState.Up && !_work)
                             break;
                     }
                     else if (x is MouseCommand mcmd)
                     {
                         GlobalDriver._driver.SendMouseEvent(mcmd.Button, mcmd.Dir);
-                        if(mcmd.Dir == MouseDir.Up && !_work)
+                        if (mcmd.Dir == MouseDir.Up && !_work)
                             break;
                     }
                     else if (x is DelayCommand dcmd)

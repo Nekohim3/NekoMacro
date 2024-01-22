@@ -74,6 +74,20 @@ namespace NekoMacro.MacrosBase
             set => this.RaiseAndSetIfChanged(ref _y, value);
         }
 
+        private int _x1;
+        public int X1
+        {
+            get => _x1;
+            set => this.RaiseAndSetIfChanged(ref _x1, value);
+        }
+
+        private int _y1;
+        public int Y1
+        {
+            get => _y1;
+            set => this.RaiseAndSetIfChanged(ref _y1, value);
+        }
+
         private bool _abs;
         public bool Abs
         {
@@ -94,12 +108,23 @@ namespace NekoMacro.MacrosBase
             
         }
 
-        public MouseCommand(MouseButton button, MouseDir dir, int x = int.MinValue, int y = int.MinValue, bool abs = true)
+        //public MouseCommand(MouseButton button, MouseDir dir, int x = int.MinValue, int y = int.MinValue, bool abs = true)
+        //{
+        //    _button = button;
+        //    _dir    = dir;
+        //    _x      = x;
+        //    _y      = y;
+        //    _abs    = abs;
+        //}
+
+        public MouseCommand(MouseButton button, MouseDir dir, int x = int.MinValue, int y = int.MinValue, int x1 = int.MinValue, int y1 = int.MinValue, bool abs = true)
         {
             _button = button;
             _dir    = dir;
             _x      = x;
             _y      = y;
+            _x1 = x1;
+            _y1 = y1;
             _abs    = abs;
         }
 
