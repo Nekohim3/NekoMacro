@@ -370,13 +370,13 @@ namespace NekoMacro.ViewModels
 
         private void OnDeleteCommand()
         {
-            //if (CommandList.SelectedItems == null || CommandList.SelectedItems.Count == 0)
-            //    return;
-            //var level = CommandList.SelectedItems.First().Level;
-            //if (CommandList.SelectedItems.Any(_ => _.Level != level))
-            //    return;
-            //foreach (var x in CommandList.SelectedItems.ToList())
-            //    CommandList.Remove(x);
+            if (CommandList.SelectedItems == null || CommandList.SelectedItems.Count == 0)
+                return;
+            var level = CommandList.SelectedItems.First().Level;
+            if (CommandList.SelectedItems.Any(_ => _.Level != level))
+                return;
+            foreach (var x in CommandList.SelectedItems.ToList())
+                CommandList.Remove(x);
         }
 
         private void MousePressHandler(object sender, MousePressedEventArgs e)
@@ -403,13 +403,13 @@ namespace NekoMacro.ViewModels
 
             if (e.Key == Keys.RightAlt)
             {
-                GlobalDriver.Ctrl = e.State == KeyState.Down;
+                GlobalDriver.Alt = e.State == KeyState.Down;
                 return;
             }
 
             if (e.Key == Keys.LeftShift || e.Key == Keys.RightShift)
             {
-                GlobalDriver.Ctrl = e.State == KeyState.Down;
+                GlobalDriver.Shift = e.State == KeyState.Down;
                 return;
             }
 
@@ -429,13 +429,16 @@ namespace NekoMacro.ViewModels
                                                           {
                                                               MacrosList.SelectedItem.Commands.Insert(ind + 1, cmd);
                                                               CommandList.Insert(indcl                    + 1, cmd);
-                                                              CommandList.SelectedItems.Clear();
-                                                              CommandList.SelectedItems.Add(cmd);
+                                                              CommandList.SelectedItem = cmd;
                                                           });
                 }
                 else
                 {
-
+                    Application.Current.Dispatcher.Invoke(() =>
+                                                          {
+                                                              MacrosList.SelectedItem.Commands.Insert(ind++, cmd);
+                                                              CommandList.Insert(indcl++, cmd);
+                                                          });
                 }
             }
             else

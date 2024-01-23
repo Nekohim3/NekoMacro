@@ -45,7 +45,7 @@
                     <Button Grid.Column="4" Content="Import" Width="50" Command="{Binding ImportCmd}"/>
                     <Button Grid.Column="5" Content="Export" Width="50" Command="{Binding ExportCmd}"/>
                 </Grid>
-                <DataGrid Grid.Row="1" ItemsSource="{Binding MacrosList}" SelectedItem="{Binding MacrosList.SelectedItem}">
+                <DataGrid Grid.Row="1" ItemsSource="{Binding MacrosList}" SelectedItem="{Binding MacrosList.SelectedItem}" CanUserDeleteRows="False">
                     <DataGrid.Columns>
                         <DataGridTextColumn Header="Macros name" Width="*" MinWidth="100" Binding="{Binding Name}"/>
                         <DataGridTextColumn Header="Hotkey" Width="Auto" MinWidth="100"/>
@@ -90,7 +90,7 @@
                     <Button Grid.Column="2" Content="Up" Width="50"/>
                     <Button Grid.Column="3" Content="Down" Width="50"/>-->
                 </Grid>
-                <DataGrid Grid.Row="1" ItemsSource="{Binding CommandList}" SelectionChanged="Selector_OnSelectionChanged" CanUserDeleteRows="False">
+                <DataGrid Grid.Row="1" ItemsSource="{Binding CommandList}" SelectedItem="{Binding CommandList.SelectedItem}" SelectionChanged="Selector_OnSelectionChanged" CanUserDeleteRows="False">
                     <DataGrid.Columns>
                         <DataGridTemplateColumn Header="Action" Width="*">
                             <DataGridTemplateColumn.CellTemplate>

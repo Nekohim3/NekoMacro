@@ -274,6 +274,22 @@ namespace NekoMacro.Utils
             }
         }
 
+        private T _selectedItem;
+        public T SelectedItem
+        {
+            get => _selectedItem;
+            set
+            {
+                if (_selectedItem == value)
+                    return;
+                var oldSelection = _selectedItem;
+                _selectedItem = value;
+
+                SelectionChanged?.Invoke(this, new List<T>() { _selectedItem }, new List<T>() { oldSelection });
+                OnPropertyChanged();
+            }
+        }
+
         public ObservableCollectionWithMultiSelectedItem() : base()
         {
 
