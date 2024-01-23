@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
@@ -54,14 +55,16 @@ namespace NekoMacro
 
         private static void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
         {
-            Logger.ErrorQ(e.ExceptionObject as Exception);
             GlobalDriver.Unload();
+            Logger.ErrorQ(e.ExceptionObject as Exception, "CD");
+            //Process.GetCurrentProcess().Kill();
         }
 
         private void CurrentOnDispatcherUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)
         {
-            Logger.ErrorQ(e.Exception);
             GlobalDriver.Unload();
+            Logger.ErrorQ(e.Exception, "UE");
+            //Process.GetCurrentProcess().Kill();
         }
     }
 }

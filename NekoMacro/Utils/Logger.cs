@@ -37,14 +37,14 @@ namespace NekoMacro
         {
             Error(msg);
             MessageBox.Show("Возникла ошибка. Приложение будет закрыто. Подробности находятся в лог файле.", "", MessageBoxButton.OK, MessageBoxImage.Error);
-            Process.GetCurrentProcess().Kill();
+            //Process.GetCurrentProcess().Kill();
         }
 
         public static void ErrorQ(Exception e, string msg = "")
         {
             Error(e, msg);
             MessageBox.Show("Возникла ошибка. Приложение будет закрыто. Подробности находятся в лог файле.", "", MessageBoxButton.OK, MessageBoxImage.Error);
-            Process.GetCurrentProcess().Kill();
+            //Process.GetCurrentProcess().Kill();
         }
 
         public static void Info(string msg)

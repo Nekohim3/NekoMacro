@@ -9,6 +9,7 @@ using System.Reactive.PlatformServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Windows.Threading;
 using DynamicData;
 using Interceptor;
 using NekoMacro.MacrosBase;
@@ -19,6 +20,7 @@ using NekoMacro.Utils.TreeDataGrid;
 using Newtonsoft.Json;
 using ReactiveUI;
 using Keys = Interceptor.Keys;
+using Application = System.Windows.Application;
 
 namespace NekoMacro.ViewModels
 {
@@ -411,17 +413,25 @@ namespace NekoMacro.ViewModels
                 return;
             }
 
+            if (e.State != KeyState.Up)
+                return;
             var cmd    = new KeyCmd(e.Key, BetweenDelay, ClickDelay, GlobalDriver.Ctrl, GlobalDriver.Shift, GlobalDriver.Alt);
             var parent = CommandList.SelectedItems.First().Parent;
             if (parent == null)
             {
                 var ind   = MacrosList.SelectedItem.Commands.IndexOf(CommandList.SelectedItems.First());
-                var indcl = CommandList.SelectedItems.IndexOf(CommandList.SelectedItems.First());
+                var indcl = CommandList.IndexOf(CommandList.SelectedItems.First());
+                cmd = new KeyCmd(e.Key, ind, indcl, GlobalDriver.Ctrl, GlobalDriver.Shift, GlobalDriver.Alt);
+
                 if (InsertAfterSelected)
                 {
-                    MacrosList.SelectedItem.Commands.Insert(ind + 1, cmd);
-                    CommandList.Insert(indcl                    + 1, cmd);
-                    CommandList.SelectedItems = new ObservableCollection<BaseCmd>() { CommandList.SelectedItems[indcl + 1] };
+                    Application.Current.Dispatcher.Invoke(() =>
+                                                          {
+                                                              MacrosList.SelectedItem.Commands.Insert(ind + 1, cmd);
+                                                              CommandList.Insert(indcl                    + 1, cmd);
+                                                              CommandList.SelectedItems.Clear();
+                                                              CommandList.SelectedItems.Add(cmd);
+                                                          });
                 }
                 else
                 {
